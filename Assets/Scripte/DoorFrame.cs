@@ -4,15 +4,16 @@ public class DoorFrame : MonoBehaviour
 {
     public Door door; // Referenz zur Tür
 
-    void OnMouseDown()
+    void Update()
     {
-        if (door != null)
+        // Überprüft, ob die E-Taste gedrückt wurde, um mit der Tür zu interagieren
+        if (Input.GetKeyDown(KeyCode.E) && door != null)
         {
-            door.ToggleDoor();
+            door.Interact(); // Ruft die Interact-Methode der Tür auf, wenn sie vorhanden ist
         }
-        else
+        else if (door == null)
         {
-            Debug.LogError(" Keine Tür zugewiesen im Inspector!");
+            Debug.LogError("Keine Tür zugewiesen im Inspector!"); // Gibt eine Fehlermeldung aus, falls keine Tür zugewiesen wurde
         }
     }
 }

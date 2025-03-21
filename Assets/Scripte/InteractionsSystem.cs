@@ -29,7 +29,7 @@ public class InteractionsSystem : MonoBehaviour
 
             if (interactable != null)
             {
-                interactionText.text = "[E] " + interactable.promptMessage;
+                interactionText.text = " " + interactable.promptMessage;
                 interactionText.enabled = true;
             }
         }
