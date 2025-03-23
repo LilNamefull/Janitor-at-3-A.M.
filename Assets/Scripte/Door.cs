@@ -1,53 +1,79 @@
-using UnityEngine; // Importiert das UnityEngine-Namespace, um auf Unity-Funktionen und -Klassen zugreifen zu können.
+using UnityEngine;
 
-public class Door : MonoBehaviour // Definiert eine Klasse "Door", die von MonoBehaviour erbt, um sie in Unity als Script verwenden zu können.
+public class Door : MonoBehaviour
 {
-    private bool isOpen = false; // Eine boolesche Variable, die den aktuellen Zustand der Tür speichert (ob sie geöffnet oder geschlossen ist).
-    public Transform doorTransform; // Referenz auf das Transform der Tür (das Objekt, das sich dreht). 
-    public float openAngle = 180f; // Der Öffnungswinkel der Tür in Grad, standardmäßig 90 Grad.
-    public float speed = 3f; // Die Geschwindigkeit, mit der die Tür sich öffnen oder schließen soll.
+    private bool isOpen = false;
+    public Transform doorTransform; // Die Tür selbst
+    public float openAngle = 90f; // Öffnungswinkel
+    public float speed = 3f; // Geschwindigkeit
+    public Transform player; // Referenz zum Spieler
+    public float interactionDistance = 3f; // Maximale Distanz für Interaktion
+    public LayerMask interactableLayer; // Nur bestimmte Objekte als Tür erkennen
 
-    private Quaternion closedRotation; // Eine Quaternion, die die Rotation der Tür im geschlossenen Zustand speichert.
-    private Quaternion openRotation; // Eine Quaternion, die die Rotation der Tür im offenen Zustand speichert.
-    private bool isMoving = false; // Eine boolesche Variable, die überprüft, ob die Tür gerade in Bewegung ist, um zu verhindern, dass mehrere Interaktionen gleichzeitig stattfinden.
+    private Quaternion closedRotation;
+    private Quaternion openRotation;
+    private bool isMoving = false; // Blockiert neue Eingaben während der Animation
 
-    void Start() // Die Start-Methode wird einmal beim Start des Spiels aufgerufen.
+    void Start()
     {
-        closedRotation = doorTransform.localRotation; // Speichert die aktuelle Rotation der Tür als geschlossene Rotation.
-        openRotation = closedRotation * Quaternion.Euler(0, openAngle, 0); // Berechnet die offene Rotation, indem die geschlossene Rotation um den angegebenen Winkel in der Y-Achse rotiert wird.
-    }
+        closedRotation = doorTransform.localRotation;
+        openRotation = closedRotation * Quaternion.Euler(0, openAngle, 0);
 
-    void Update() // Die Update-Methode wird jedes Frame aufgerufen.
-    {
-        if (Input.GetKeyDown(KeyCode.E) && !isMoving) // Wenn die "E"-Taste gedrückt wird und die Tür nicht in Bewegung ist, wird die Interaktion ausgelöst.
+        if (player == null) // Falls der Spieler nicht manuell zugewiesen wurde, suche ihn
         {
-            Interact(); // Ruft die Interact-Methode auf.
+            player = GameObject.FindGameObjectWithTag("Player")?.transform;
         }
     }
 
-    public void Interact() // Diese Methode wird aufgerufen, wenn der Spieler mit der Tür interagieren möchte.
+    void Update()
     {
-        if (!isMoving) // Wenn die Tür nicht in Bewegung ist, kann eine neue Interaktion ausgeführt werden.
+        if (Input.GetKeyDown(KeyCode.E) && !isMoving && IsPlayerLookingAtDoor())
         {
-            Debug.Log("Tür wird " + (isOpen ? "geschlossen" : "geöffnet")); // Gibt eine Nachricht aus, je nachdem, ob die Tür geöffnet oder geschlossen wird.
-            StopAllCoroutines(); // Stoppt alle laufenden Coroutinen, um Konflikte zu vermeiden.
-            StartCoroutine(RotateDoor(isOpen ? closedRotation : openRotation)); // Startet die Coroutine, um die Tür in die gewünschte Position (offen oder geschlossen) zu rotieren.
-            isOpen = !isOpen; // Ändert den Zustand der Tür: Wenn sie offen war, wird sie geschlossen und umgekehrt.
+            Interact();
         }
     }
 
-    private System.Collections.IEnumerator RotateDoor(Quaternion targetRotation) // Eine Coroutine, die die Tür von der aktuellen Rotation zur Zielrotation bewegt.
+    public void Interact()
     {
-        isMoving = true; // Setzt die isMoving-Variable auf true, um zu signalisieren, dass sich die Tür in Bewegung befindet.
-        while (Quaternion.Angle(doorTransform.localRotation, targetRotation) > 0.1f) // Solange die aktuelle Rotation von der Zielrotation mehr als 0.1 Grad abweicht.
+        if (!isMoving)
         {
-            doorTransform.localRotation = Quaternion.Slerp(doorTransform.localRotation, targetRotation, Time.deltaTime * speed); // Rotiert die Tür allmählich in Richtung der Zielrotation unter Verwendung von Slerp (Spherical Linear Interpolation).
-            yield return null; // Wartet auf das nächste Frame, bevor die Coroutine fortgesetzt wird.
+            Debug.Log("Tür wird " + (isOpen ? "geschlossen" : "geöffnet"));
+            StopAllCoroutines();
+            StartCoroutine(RotateDoor(isOpen ? closedRotation : openRotation));
+            isOpen = !isOpen;
         }
-        doorTransform.localRotation = targetRotation; // Setzt die Rotation der Tür exakt auf die Zielrotation, wenn der Unterschied klein genug ist.
-        isMoving = false; // Setzt die isMoving-Variable auf false, um anzuzeigen, dass die Tür gestoppt ist und keine weiteren Bewegungen mehr stattfinden.
+    }
+
+    private System.Collections.IEnumerator RotateDoor(Quaternion targetRotation)
+    {
+        isMoving = true;
+        while (Quaternion.Angle(doorTransform.localRotation, targetRotation) > 0.1f)
+        {
+            doorTransform.localRotation = Quaternion.Slerp(doorTransform.localRotation, targetRotation, Time.deltaTime * speed);
+            yield return null;
+        }
+        doorTransform.localRotation = targetRotation;
+        isMoving = false;
+    }
+
+    private bool IsPlayerLookingAtDoor()
+    {
+        if (player == null) return false;
+
+        // Prüfe die Entfernung
+        float distance = Vector3.Distance(player.position, transform.position);
+        if (distance > interactionDistance) return false;
+
+        // Prüfe, ob der Spieler auf die Tür schaut (Raycast)
+        Ray ray = new Ray(player.position, player.forward);
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit, interactionDistance, interactableLayer))
+        {
+            return hit.transform == transform; // Tür wird nur getroffen, wenn sie direkt vor dem Spieler ist
+        }
+
+        return false;
     }
 }
-
 
 
