@@ -7,6 +7,7 @@ public class InventoryUI : MonoBehaviour
     public GameObject inventoryPanel;
     public Transform slotParent;
     public GameObject slotPrefab;
+    public MonoBehaviour playerController; // Hier ziehst du dein FPS-/Movement-Skript rein
 
     private Inventory inventory;
     private List<InventorySlot> slots = new List<InventorySlot>();
@@ -47,7 +48,34 @@ public class InventoryUI : MonoBehaviour
         inventoryPanel.SetActive(isOpen);
 
         if (isOpen) UpdateInventoryUI();
+        if (isOpen)
+        {
+            // INVENTAR ÖFFNET SICH:
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+
+            // Spielerbewegung & Kamera ausschalten
+            if (playerController != null)
+                playerController.enabled = false;
+
+            // (Optional) Spiel pausieren:
+            // Time.timeScale = 0f;
+        }
+        else
+        {
+            // INVENTAR SCHLIESST SICH:
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+
+            // Spielerbewegung & Kamera wieder an
+            if (playerController != null)
+                playerController.enabled = true;
+
+            // (Optional) Spiel fortsetzen:
+            // Time.timeScale = 1f;
+        }
     }
+
 
     public void UpdateInventoryUI()
     {
