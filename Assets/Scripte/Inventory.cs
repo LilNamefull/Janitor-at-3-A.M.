@@ -15,7 +15,6 @@ public class Inventory : MonoBehaviour
         }
         items.Add(newItem);
         Debug.Log("Item hinzugefügt: " + newItem.itemName);
-        // Evtl. UI aktualisieren
         return true;
     }
 
@@ -28,4 +27,3 @@ public class Inventory : MonoBehaviour
         }
     }
 }
-

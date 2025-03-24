@@ -134,7 +134,8 @@ GameObject:
   - component: {fileID: 9422652}
   - component: {fileID: 9422658}
   - component: {fileID: 9422659}
-  - component: {fileID: 9422660}
+  - component: {fileID: 9422661}
+  - component: {fileID: 9422662}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -293,7 +294,21 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 2, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &9422660
+--- !u!114 &9422661
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9422651}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f67ec49b5429d24082bc3bf1def5137, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxSlots: 3
+  items: []
+--- !u!114 &9422662
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -305,7 +320,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 725ac773d557ada41bc4ae5bd872f02a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupRange: 4
+  pickupRange: 3
   itemLayer:
     serializedVersion: 2
     m_Bits: 8
@@ -360,7 +375,6 @@ MonoBehaviour:
   inventoryPanel: {fileID: 68726341}
   slotParent: {fileID: 68726342}
   slotPrefab: {fileID: 89660219}
-  playerController: {fileID: 9422653}
 --- !u!1 &68726341
 GameObject:
   m_ObjectHideFlags: 0

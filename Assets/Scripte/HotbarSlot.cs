@@ -24,10 +24,6 @@ public class HotbarSlot : MonoBehaviour
     {
         return currentItem != null;
     }
-    public InventoryItem GetItem()
-    {
-        return currentItem;
-    }
 
     public void UseItem()
     {

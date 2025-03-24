@@ -7,7 +7,6 @@ public class PickupItem : MonoBehaviour
 
     public void PickUp()
     {
-        // Inventory suchen
         Inventory inv = FindAnyObjectByType<Inventory>();
         if (inv != null)
         {

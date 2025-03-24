@@ -4,22 +4,20 @@ using UnityEngine.UI;
 
 public class HotbarUI : MonoBehaviour
 {
-    public Transform slotParent; // Parent für die Slots
-    public GameObject slotPrefab; // Prefab für einzelne Slots
-    public int slotCount = 5; // Anzahl der Slots in der Hotbar
+    public Transform slotParent;
+    public GameObject slotPrefab;
+    public int slotCount = 5;
     private List<InventorySlot> slots = new List<InventorySlot>();
     private int selectedSlotIndex = 0;
 
     void Start()
     {
-        // Hotbar-Slots erstellen
         for (int i = 0; i < slotCount; i++)
         {
             GameObject slotObj = Instantiate(slotPrefab, slotParent);
             InventorySlot slot = slotObj.GetComponent<InventorySlot>();
             slots.Add(slot);
         }
-
         HighlightSelectedSlot();
     }
 
@@ -39,7 +37,6 @@ public class HotbarUI : MonoBehaviour
         {
             selectedSlotIndex = (selectedSlotIndex - 1 + slotCount) % slotCount;
         }
-
         HighlightSelectedSlot();
     }
 
@@ -49,7 +46,7 @@ public class HotbarUI : MonoBehaviour
         {
             Image slotImage = slots[i].GetComponent<Image>();
             if (i == selectedSlotIndex)
-                slotImage.color = Color.yellow; // Markiere ausgewählten Slot
+                slotImage.color = Color.yellow;
             else
                 slotImage.color = Color.white;
         }
