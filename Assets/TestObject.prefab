@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 8473193660286557528}
   - component: {fileID: 211652013994514332}
   - component: {fileID: 7337363081975893798}
+  - component: {fileID: 7319612758939249363}
   m_Layer: 3
   m_Name: TestObject
   m_TagString: Untagged
@@ -104,12 +105,12 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.0269066, y: 1.5047679, z: 1.0342549}
-  m_Center: {x: 0.004088101, y: 0.25238425, z: 0.0015442573}
+  m_Size: {x: 1.0269066, y: 6.4755626, z: 6.541805}
+  m_Center: {x: 0.004088101, y: 0.6222343, z: 0.17885539}
 --- !u!114 &211652013994514332
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -122,10 +123,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e7eec97beec131b4b95cedf45f8b0b42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemData:
-    itemName: "W\xFCrfel"
-    icon: {fileID: 10915, guid: 0000000000000000f000000000000000, type: 0}
-    prefab: {fileID: 6302900250181144203}
+  itemData: {fileID: 11400000, guid: e1f774e940a4c6c4d8cc781193029d3d, type: 2}
+  destroyOnPickup: 1
 --- !u!114 &7337363081975893798
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -139,3 +138,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   promptMessage: "dr\xFCcken, um das Objekt zu inspizieren"
+--- !u!54 &7319612758939249363
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6302900250181144203}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0

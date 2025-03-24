@@ -4,40 +4,28 @@ using UnityEngine;
 public class Inventory : MonoBehaviour
 {
     public int maxSlots = 20;
-    public List<Item> items = new List<Item>(); // Die eigentliche Item-Liste
+    public List<InventoryItem> items = new List<InventoryItem>();
 
-    // Füge ein Item hinzu, wenn Platz ist
-    public bool AddItem(Item newItem)
+    public bool AddItem(InventoryItem newItem)
     {
         if (items.Count >= maxSlots)
         {
             Debug.Log("Inventar ist voll!");
             return false;
         }
-
         items.Add(newItem);
         Debug.Log("Item hinzugefügt: " + newItem.itemName);
-        // Hier könntest du UI aktualisieren:
-        // InventoryUI.Instance.UpdateUI();
+        // Evtl. UI aktualisieren
         return true;
     }
 
-    // Entferne ein Item
-    public void RemoveItem(Item itemToRemove)
+    public void RemoveItem(InventoryItem item)
     {
-        if (items.Contains(itemToRemove))
+        if (items.Contains(item))
         {
-            items.Remove(itemToRemove);
-            Debug.Log("Item entfernt: " + itemToRemove.itemName);
-            // UI aktualisieren:
-            // InventoryUI.Instance.UpdateUI();
+            items.Remove(item);
+            Debug.Log("Item entfernt: " + item.itemName);
         }
-    }
-
-    // Aktuelle Liste aller Items
-    public List<Item> GetItemList()
-    {
-        return items;
     }
 }
 

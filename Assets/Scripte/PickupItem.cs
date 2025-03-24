@@ -2,17 +2,18 @@ using UnityEngine;
 
 public class PickupItem : MonoBehaviour
 {
-    public Item itemData; // Referenz auf das Item-Objekt (Name, Icon, Prefab)
+    public InventoryItem itemData;
+    public bool destroyOnPickup = true;
 
-    void OnTriggerEnter(Collider other)
+    public void PickUp()
     {
-        if (other.CompareTag("Player"))
+        // Inventory suchen
+        Inventory inv = FindAnyObjectByType<Inventory>();
+        if (inv != null)
         {
-            // Füge das Item ins Inventar
-            Inventory inv = FindObjectOfType<Inventory>();
-            if (inv.AddItem(itemData))
+            bool added = inv.AddItem(itemData);
+            if (added && destroyOnPickup)
             {
-                // Zerstöre das 3D-Objekt in der Szene
                 Destroy(gameObject);
             }
         }

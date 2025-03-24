@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class InventorySlot : MonoBehaviour
+public class HotbarSlot : MonoBehaviour
 {
     public Image icon;
     private InventoryItem currentItem;
@@ -24,7 +24,6 @@ public class InventorySlot : MonoBehaviour
     {
         return currentItem != null;
     }
-
     public InventoryItem GetItem()
     {
         return currentItem;
@@ -37,5 +36,9 @@ public class InventorySlot : MonoBehaviour
             currentItem.Use();
         }
     }
-}
 
+    public void SetHighlight(bool isSelected)
+    {
+        GetComponent<Image>().color = isSelected ? Color.yellow : Color.white;
+    }
+}
