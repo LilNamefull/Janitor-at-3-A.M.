@@ -80,10 +80,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: 4c5580f8936da504e87d89379fcf06c9, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 7559dd6becba713429af5f55c1a595af, type: 2}
     - target: {fileID: 919132149155446097, guid: 4c5580f8936da504e87d89379fcf06c9, type: 3}
       propertyPath: m_Name
       value: Mop
       objectReference: {fileID: 0}
+    - target: {fileID: 6317578925029434746, guid: 4c5580f8936da504e87d89379fcf06c9, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 86772e05bbf929a449eb307ab4d640cd, type: 2}
+    - target: {fileID: 6445149291569698076, guid: 4c5580f8936da504e87d89379fcf06c9, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: ca3ed34339214654a998843911e55c61, type: 2}
+    - target: {fileID: 8100320773420232829, guid: 4c5580f8936da504e87d89379fcf06c9, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 7559dd6becba713429af5f55c1a595af, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

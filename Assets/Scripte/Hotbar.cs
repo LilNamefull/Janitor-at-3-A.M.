@@ -89,8 +89,8 @@ public class Hotbar : MonoBehaviour
                     break;
 
                 case 2:
-                    followScript.positionOffset = new Vector3(0.3f, -0.2f, 0.5f);
-                    followScript.rotationOffset = new Vector3(0, 0, 0);
+                    followScript.positionOffset = new Vector3(1.5f, -0.9f, 2f);
+                    followScript.rotationOffset = new Vector3(0, -40f, 0);
                     break;
             }
         }
