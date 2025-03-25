@@ -1,84 +1,111 @@
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Hotbar : MonoBehaviour
 {
-    public List<GameObject> itemPrefabs;  // Liste der Prefabs für Wischmop, Taschenlampe, Schlüssel
-    public Transform itemSpawnPoint;      // Wo das Item erscheinen soll (z. B. vor der Kamera)
+    public Transform cameraTransform;
+    public GameObject mopPrefab;
+    public GameObject flashlightPrefab;
+    public GameObject keyPrefab;
 
-    private GameObject currentItem;       // Das aktuell instanziierte Item
-    private int currentSlot = 0;          // Aktuell ausgewählter Slot
+    public Image[] hotbarSlots; // UI-Symbole der Hotbar (Ziehe sie in Unity in das Array)
+    public Color normalColor = new Color(1, 1, 1, 0.5f); // Standardfarbe (Transparent)
+    public Color selectedColor = new Color(1, 1, 1, 1f); // Volle Sichtbarkeit für das aktive Item
+
+    private GameObject activeItem;
+    private int currentSlot = 0;
+    private bool hasKey = false;
 
     void Start()
     {
-        SpawnItem();  // Erstes Item direkt spawnen
+        EquipItem(0);
     }
 
     void Update()
     {
-        if (Input.GetAxis("Mouse ScrollWheel") > 0f)
-        {
-            ChangeSlot(1);
-        }
-        else if (Input.GetAxis("Mouse ScrollWheel") < 0f)
+        float scroll = Input.GetAxis("Mouse ScrollWheel");
+
+        if (scroll > 0f)
         {
             ChangeSlot(-1);
         }
+        else if (scroll < 0f)
+        {
+            ChangeSlot(1);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha1)) EquipItem(0);
+        if (Input.GetKeyDown(KeyCode.Alpha2)) EquipItem(1);
+        if (Input.GetKeyDown(KeyCode.Alpha3) && hasKey) EquipItem(2);
+    }
+
+    public void PickupKey()
+    {
+        hasKey = true;
     }
 
     void ChangeSlot(int direction)
     {
-        currentSlot += direction;
+        int newSlot = currentSlot + direction;
 
-        if (currentSlot >= itemPrefabs.Count)
-            currentSlot = 0;
-        if (currentSlot < 0)
-            currentSlot = itemPrefabs.Count - 1;
+        if (newSlot > 2) newSlot = 0;
+        if (newSlot < 0) newSlot = 2;
 
-        SpawnItem();
+        if (newSlot == 2 && !hasKey) return;
+
+        EquipItem(newSlot);
     }
 
-    void SpawnItem()
+    void EquipItem(int slot)
     {
-        // Falls schon ein Item existiert, löschen
-        if (currentItem != null)
+        if (activeItem != null) Destroy(activeItem);
+
+        currentSlot = slot;
+        GameObject selectedPrefab = null;
+
+        switch (slot)
         {
-            Destroy(currentItem);
+            case 0: selectedPrefab = mopPrefab; break;
+            case 1: selectedPrefab = flashlightPrefab; break;
+            case 2: if (hasKey) selectedPrefab = keyPrefab; break;
         }
 
-        // Falls der Slot leer ist (z. B. für den Schlüssel, wenn noch nicht eingesammelt), nichts tun
-        if (itemPrefabs[currentSlot] == null)
+        if (selectedPrefab != null)
         {
-            return;
+            activeItem = Instantiate(selectedPrefab);
+            HotbarItemFollow followScript = activeItem.AddComponent<HotbarItemFollow>();
+            followScript.cameraTransform = cameraTransform;
+
+            switch (slot)
+            {
+                case 0:
+                    followScript.positionOffset = new Vector3(0.5f, -0.75f, 2f);
+                    followScript.rotationOffset = new Vector3(-40f, 0, 45f);
+                    break;
+
+                case 1:
+                    followScript.positionOffset = new Vector3(0.7f, -0.3f, 0.5f);
+                    followScript.rotationOffset = new Vector3(0, 83f, 0);
+                    break;
+
+                case 2:
+                    followScript.positionOffset = new Vector3(0.3f, -0.2f, 0.5f);
+                    followScript.rotationOffset = new Vector3(0, 0, 0);
+                    break;
+            }
         }
 
-        // Neues Item aus dem Prefab instanziieren
-        currentItem = Instantiate(itemPrefabs[currentSlot], itemSpawnPoint.position, itemSpawnPoint.rotation);
-        currentItem.transform.SetParent(itemSpawnPoint);
-
-        // INDIVIDUELLE POSITIONEN & ROTATIONEN:
-        switch (currentSlot)
-        {
-            case 0: // Wischmop
-                currentItem.transform.localPosition = new Vector3(-0.072f, -1.5f, 3.267f);  // Leicht nach vorne & rechts
-                currentItem.transform.localRotation = Quaternion.Euler(27.653f, 100.669f, -60.62f);  // Drehe um 90° nach rechts
-                break;
-
-            case 1: // Taschenlampe
-                currentItem.transform.localPosition = new Vector3(-0.646f, -0.374f, 0.352f);  // Etwas tiefer & nach vorne
-                currentItem.transform.localRotation = Quaternion.Euler(1.924f, -268.106f, 0.587f);  // Standard-Ausrichtung
-                break;
-
-            case 2: // Schlüssel
-                currentItem.transform.localPosition = new Vector3(0.1f, -0.1f, 0.5f);  // Leicht nach vorne
-                currentItem.transform.localRotation = Quaternion.Euler(0, -45, 0);  // Leichte Drehung
-                break;
-        }
+        UpdateHotbarUI();
     }
 
-    // Funktion, um den Schlüssel später im Spiel hinzuzufügen
-    public void AddKeyToHotbar(GameObject keyPrefab)
+    void UpdateHotbarUI()
     {
-        itemPrefabs[2] = keyPrefab; // Slot 2 (Index 2) ist für den Schlüssel reserviert
+        for (int i = 0; i < hotbarSlots.Length; i++)
+        {
+            if (i == currentSlot)
+                hotbarSlots[i].color = selectedColor; // Aktives Item hervorheben
+            else
+                hotbarSlots[i].color = normalColor; // Alle anderen verblassen
+        }
     }
 }
