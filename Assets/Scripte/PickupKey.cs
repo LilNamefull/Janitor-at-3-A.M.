@@ -1,27 +1,23 @@
+
 using UnityEngine;
 
 public class PickupKey : MonoBehaviour
 {
-    private Hotbar hotbar; // Referenz zum Hotbar-Skript
+    private bool collected = false;
 
-    void Start()
+    private void OnTriggerEnter(Collider other)
     {
-        // Holen des ersten Hotbar-Skripts in der Szene
-        hotbar = Object.FindFirstObjectByType<Hotbar>();
+        if (collected) return;
 
-        if (hotbar == null)
+        if (other.CompareTag("Player"))
         {
-            Debug.LogError("Kein Hotbar-Skript gefunden. Stelle sicher, dass ein HotbarManager in der Szene existiert.");
-        }
-    }
+            collected = true;
 
-    void OnTriggerEnter(Collider other)
-    {
-        // Wenn der Trigger das Tag "Player" hat und die Referenz zum Hotbar-Skript vorhanden ist
-        if (other.CompareTag("Player") && hotbar != null)
-        {
-            hotbar.PickupKey(); // Schlüssel aufheben
-            Destroy(gameObject); // Entferne den Schlüssel aus der Szene
+            // Schlüssel im GameManager zählen
+            GameManager.Instance.CollectKey();
+
+            // Schlüssel entfernen
+            Destroy(gameObject);
         }
     }
 }
