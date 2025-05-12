@@ -16,6 +16,11 @@ public class Hotbar : MonoBehaviour
     private int currentSlot = 0;
     private bool hasKey = false;
 
+    public bool IsMopEquipped()
+    {
+        return currentSlot == 0; // 0 = Mop
+    }
+
     void Start()
     {
         EquipItem(0);
@@ -108,4 +113,6 @@ public class Hotbar : MonoBehaviour
                 hotbarSlots[i].color = normalColor; // Alle anderen verblassen
         }
     }
+
+    
 }

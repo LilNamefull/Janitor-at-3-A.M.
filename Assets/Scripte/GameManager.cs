@@ -70,4 +70,6 @@ public class GameManager : MonoBehaviour
         lockedDoor.SetActive(false); // Beispiel: Tür deaktivieren
         Debug.Log("Alle Schlüssel gesammelt! Tür ist jetzt offen.");
     }
+
+
 }
