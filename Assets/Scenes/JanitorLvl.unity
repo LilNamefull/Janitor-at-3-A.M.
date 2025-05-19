@@ -3845,15 +3845,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2426579464371018374, guid: 3ef04dc0a13e54a40ad9f627f49b3942, type: 3}
       propertyPath: m_LocalScale.x
-      value: 13.827759
+      value: 26.86457
       objectReference: {fileID: 0}
     - target: {fileID: 2426579464371018374, guid: 3ef04dc0a13e54a40ad9f627f49b3942, type: 3}
       propertyPath: m_LocalScale.y
-      value: 13.827759
+      value: 26.86457
       objectReference: {fileID: 0}
     - target: {fileID: 2426579464371018374, guid: 3ef04dc0a13e54a40ad9f627f49b3942, type: 3}
       propertyPath: m_LocalScale.z
-      value: 18.476274
+      value: 35.895706
       objectReference: {fileID: 0}
     - target: {fileID: 2426579464371018374, guid: 3ef04dc0a13e54a40ad9f627f49b3942, type: 3}
       propertyPath: m_LocalPosition.x
@@ -3861,11 +3861,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2426579464371018374, guid: 3ef04dc0a13e54a40ad9f627f49b3942, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.3
+      value: 0.352
       objectReference: {fileID: 0}
     - target: {fileID: 2426579464371018374, guid: 3ef04dc0a13e54a40ad9f627f49b3942, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 198.207
+      value: 198.601
       objectReference: {fileID: 0}
     - target: {fileID: 2426579464371018374, guid: 3ef04dc0a13e54a40ad9f627f49b3942, type: 3}
       propertyPath: m_LocalRotation.w
@@ -8768,8 +8768,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef9166074d26d3c49a060783ff276dbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  totalSpots: 1
-  totalChairs: 1
+  totalSpots: 3
+  totalChairs: 3
   cleanedSpots: 0
   placedChairs: 0
   lockerController: {fileID: 546491040}
