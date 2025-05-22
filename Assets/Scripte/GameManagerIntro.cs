@@ -11,47 +11,39 @@ public class GameManagerIntro : MonoBehaviour
     [HideInInspector] public int placedChairs = 0;
 
     [Header("Finales Event")]
-    public LockerController lockerController; // Inspector: dein Locker-Objekt
+    public LockerCutsceneController lockerController; // Inspector: dein LockerCutsceneController
+
+    [HideInInspector]
+    public bool allTasksDone = false;  // true, sobald beide Minispiele abgeschlossen sind
 
     void Awake()
     {
-        // Singleton-Setup
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
     }
 
-    /// <summary>Wird aufgerufen, wenn ein Fleck vollständig gereinigt wurde.</summary>
     public void SpotCleaned()
     {
         cleanedSpots++;
         CheckAllDone();
     }
 
-    /// <summary>Wird aufgerufen, wenn ein Stuhl korrekt platziert wurde.</summary>
     public void ChairPlaced()
     {
         placedChairs++;
         CheckAllDone();
     }
 
-    /// <summary>Prüft, ob alle Aufgaben erledigt sind und startet das Finale.</summary>
-
-        private void CheckAllDone()
+    private void CheckAllDone()
+    {
+        Debug.Log($"CheckAllDone: cleanedSpots={cleanedSpots}/{totalSpots}, placedChairs={placedChairs}/{totalChairs}");
+        if (cleanedSpots >= totalSpots && placedChairs >= totalChairs)
         {
-            Debug.Log($"CheckAllDone: cleanedSpots={cleanedSpots}/{totalSpots}, placedChairs={placedChairs}/{totalChairs}");
-            if (cleanedSpots >= totalSpots && placedChairs >= totalChairs)
-            {
-                Debug.Log(">>> ALL DONE! LockerController wird gestartet.");
-                if (lockerController != null)
-                {
-                    lockerController.StartLockering();
-                }
-                else
-                {
-                    Debug.LogError("GameManagerIntro: lockerController ist NULL!");
-                }
-            }
+            Debug.Log("Alle Aufgaben erledigt → Klopfen wird gespielt!");
+            allTasksDone = true;
+            
+           
         }
-
-    
+      
+    }
 }

@@ -21,6 +21,11 @@ public class DialogueManager : MonoBehaviour
     private bool inDialogue;
     private bool aborted;
 
+    public bool IsInDialogue
+    {
+        get { return inDialogue; }
+    }
+
     void Awake()
     {
         if (Instance == null) Instance = this;
