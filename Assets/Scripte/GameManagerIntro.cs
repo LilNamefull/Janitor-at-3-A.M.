@@ -4,17 +4,16 @@ public class GameManagerIntro : MonoBehaviour
 {
     public static GameManagerIntro Instance;
 
-    [Header("Level-Aufgaben")]
-    public int totalSpots;       // Anzahl der Flecken im Level
-    public int totalChairs;      // Anzahl der aufzuräumenden Stühle
-    [HideInInspector] public int cleanedSpots = 0;
-    [HideInInspector] public int placedChairs = 0;
+    [Header("Aufgaben")]
+    public int totalSpots;
+    public int totalChairs;
+    [HideInInspector] public int cleanedSpots = 1;
+    [HideInInspector] public int placedChairs = 1;
 
-    [Header("Finales Event")]
-    public LockerCutsceneController lockerController; // Inspector: dein LockerCutsceneController
+    [Header("Locker Cutscene")]
+    public LockerCutsceneController lockerController;
 
-    [HideInInspector]
-    public bool allTasksDone = false;  // true, sobald beide Minispiele abgeschlossen sind
+    [HideInInspector] public bool allTasksDone = false;
 
     void Awake()
     {
@@ -36,14 +35,14 @@ public class GameManagerIntro : MonoBehaviour
 
     private void CheckAllDone()
     {
-        Debug.Log($"CheckAllDone: cleanedSpots={cleanedSpots}/{totalSpots}, placedChairs={placedChairs}/{totalChairs}");
-        if (cleanedSpots >= totalSpots && placedChairs >= totalChairs)
+        if (!allTasksDone && cleanedSpots >= totalSpots && placedChairs >= totalChairs)
         {
-            Debug.Log("Alle Aufgaben erledigt → Klopfen wird gespielt!");
             allTasksDone = true;
-            
-           
+            Debug.Log("Alle Aufgaben erledigt → Klopfen starten");
+            if (lockerController != null)
+                lockerController.PlayKnock();
+            else
+                Debug.LogError("lockerController nicht zugewiesen!");
         }
-      
     }
 }

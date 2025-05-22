@@ -14062,13 +14062,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 969646143}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: -68.929, y: 2.118, z: 194.35}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!1 &972554336
 GameObject:
   m_ObjectHideFlags: 0
@@ -16656,6 +16656,29 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7548838912240019230, guid: 00321d325a311bf4aa1d6c8f5dc3c5db, type: 3}
   m_PrefabInstance: {fileID: 1128928270}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1142163648 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4363962838263681271, guid: 00321d325a311bf4aa1d6c8f5dc3c5db, type: 3}
+  m_PrefabInstance: {fileID: 1852835789}
+  m_PrefabAsset: {fileID: 0}
+--- !u!111 &1142163651
+Animation:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1142163648}
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Animation: {fileID: 7400000, guid: 8bc2b7c1347562d4e927205e9b459707, type: 2}
+  m_Animations:
+  - {fileID: 7400000, guid: 8bc2b7c1347562d4e927205e9b459707, type: 2}
+  - {fileID: 7400000, guid: 8bc2b7c1347562d4e927205e9b459707, type: 2}
+  m_WrapMode: 1
+  m_PlayAutomatically: 0
+  m_AnimatePhysics: 0
+  m_UpdateMode: 0
+  m_CullingType: 0
 --- !u!4 &1142470018 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 270149279906075819, guid: 99cfa7ca853206548a4c32ade9285f88, type: 3}
@@ -27824,21 +27847,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c0deff135a8d3b43a3ffd05008a8712, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lockerAnimator: {fileID: 1852835796}
+  doorAnimation: {fileID: 1142163651}
   knockAudio: {fileID: 1852835791}
   cameraCutPoint: {fileID: 969646144}
   cameraReturnPoint: {fileID: 1872055177}
+  cameraMoveTime: 1
+  dialogAfterOpen:
+  - What are you doing son
+  dialogNPC:
+  - pipi kacka
+  - kacka
   npcPrefab: {fileID: 8594210003382554872, guid: 00d220fe20cef02438e57adcdcb15ad7, type: 3}
   npcSpawnPoint: {fileID: 1008242167}
-  cameraMoveTime: 1
-  linesAfterOpen:
-  - What are you doing
-  linesNPC:
-  - hae
-  - hu
-  - rs
+  pauseAfterOpen: 2
   lookSpeed: 2
-  pauseAfterReturn: 0.5
 --- !u!65 &1836670093
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -28157,10 +28179,10 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 7172277429434989988, guid: 00321d325a311bf4aa1d6c8f5dc3c5db, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1852835796}
-    - targetCorrespondingSourceObject: {fileID: 7172277429434989988, guid: 00321d325a311bf4aa1d6c8f5dc3c5db, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 1852835791}
+    - targetCorrespondingSourceObject: {fileID: 4363962838263681271, guid: 00321d325a311bf4aa1d6c8f5dc3c5db, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1142163651}
   m_SourcePrefab: {fileID: 100100000, guid: 00321d325a311bf4aa1d6c8f5dc3c5db, type: 3}
 --- !u!4 &1852835790 stripped
 Transform:
@@ -28264,28 +28286,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!95 &1852835796
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1612664191}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 023726ab9b791fd4993da6d0cec389fe, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!4 &1858803265 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 650938615482342969, guid: abec2aabc954d4d4e82c29d1daf2cf1a, type: 3}
@@ -28556,13 +28556,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1872055176}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: -68.929, y: 2.118, z: 193.966}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!1001 &1880225380
 PrefabInstance:
   m_ObjectHideFlags: 0
