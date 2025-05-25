@@ -47,6 +47,8 @@ public class KnockAndDialogController : MonoBehaviour
 
     void Update()
     {
+
+
         // 1) Starte Klopfen, sobald alle Aufgaben erledigt sind
         if (!isKnocking && GameManagerIntro.Instance.allTasksDone)
         {
@@ -68,6 +70,23 @@ public class KnockAndDialogController : MonoBehaviour
             {
                 cutsceneStarted = true;
                 knockAudio.Stop();
+
+                // 1) Collider ausschalten
+                var col = GetComponent<Collider>();
+                if (col != null)
+                    col.enabled = false;
+
+                // 2) Interactable-Script ausschalten (nur zur Sicherheit)
+                var interactable = GetComponent<Interactable>();
+                if (interactable != null)
+                    interactable.enabled = false;
+
+                if (GameManagerIntro.Instance.spotsText != null)
+                    GameManagerIntro.Instance.spotsText.gameObject.SetActive(false);
+                if (GameManagerIntro.Instance.chairsText != null)
+                    GameManagerIntro.Instance.chairsText.gameObject.SetActive(false);
+
+
                 StartCoroutine(DialogSequence());
             }
         }
