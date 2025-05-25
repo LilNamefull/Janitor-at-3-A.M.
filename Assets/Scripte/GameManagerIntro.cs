@@ -4,14 +4,11 @@ public class GameManagerIntro : MonoBehaviour
 {
     public static GameManagerIntro Instance;
 
-    [Header("Aufgaben")]
+    [Header("Level-Aufgaben")]
     public int totalSpots;
     public int totalChairs;
     [HideInInspector] public int cleanedSpots = 1;
     [HideInInspector] public int placedChairs = 1;
-
-    [Header("Locker Cutscene")]
-    public LockerCutsceneController lockerController;
 
     [HideInInspector] public bool allTasksDone = false;
 
@@ -35,14 +32,12 @@ public class GameManagerIntro : MonoBehaviour
 
     private void CheckAllDone()
     {
+        Debug.Log($"[GameManager] Spots: {cleanedSpots}/{totalSpots}, Chairs: {placedChairs}/{totalChairs}");
         if (!allTasksDone && cleanedSpots >= totalSpots && placedChairs >= totalChairs)
         {
             allTasksDone = true;
-            Debug.Log("Alle Aufgaben erledigt → Klopfen starten");
-            if (lockerController != null)
-                lockerController.PlayKnock();
-            else
-                Debug.LogError("lockerController nicht zugewiesen!");
+            Debug.Log("[GameManager] Alle Aufgaben erledigt!");
+            // kein PlayKnock() mehr – KnockAndDialogController startet selbst
         }
     }
 }
