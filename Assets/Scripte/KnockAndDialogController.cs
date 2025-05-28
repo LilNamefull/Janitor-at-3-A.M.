@@ -9,7 +9,7 @@ public class KnockAndDialogController : MonoBehaviour
     [Header("Ranges")]
     public float knockMaxDistance = 12f; // Hörweite
     public float knockMinDistance = 2f;  // Ab hier pausiert
-    public float interactDistance = 3f; // Ab hier E-Interaktion möglich
+    public float interactDistance = 3f;  // Ab hier E-Interaktion möglich
 
     [Header("Dialog")]
     public string[] dialogAfterOpen;     // Dialog 1 nach E-Drücken
@@ -19,13 +19,23 @@ public class KnockAndDialogController : MonoBehaviour
 
     [Header("Timings")]
     public float dialogDelay = 0.5f;     // Warte vor Dialog 1
-    public float lookSpeed = 2f;       // Drehtempo
+    public float lookSpeed = 2f;         // Drehtempo
 
     [Header("Camera Cut-Pivot")]
     public Transform cameraHolder;       // Leeres GameObject, Parent der MainCamera
     public float lookAngle = 45f;        // Winkel nach links
     public float rotateDuration = 0.5f;  // Dauer des Schwenks
 
+    [Header("Monster Door")]
+    [Tooltip("Zieh hier dein Monster-Tür-GameObject hinein")]
+    public GameObject monsterDoor;
+    public GameObject MonsterDoorFrameWithoutcode;
+    public GameObject Invinsiblewallbefor;
+    public GameObject Invinsiblewallmidlele;
+    public GameObject Invinsiblewallafter;
+    public GameObject Invinsiblewallbefor2;
+    public GameObject Invinsiblewallmidlele2;
+    public GameObject Invinsiblewallafter2;
     private Transform player;
     private bool isKnocking = false;
     private bool cutsceneStarted = false;
@@ -37,6 +47,20 @@ public class KnockAndDialogController : MonoBehaviour
         if (knockAudio == null) Debug.LogError("knockAudio fehlt!");
         if (cameraHolder == null) Debug.LogError("cameraHolder fehlt!");
 
+        // Monster-Tür initial deaktivieren
+        if (monsterDoor != null)
+            monsterDoor.SetActive(false);
+        if (MonsterDoorFrameWithoutcode != null)
+            MonsterDoorFrameWithoutcode.SetActive(true);
+        if (Invinsiblewallmidlele != null)
+            Invinsiblewallmidlele.SetActive(false);
+        if (Invinsiblewallafter != null)
+            Invinsiblewallafter.SetActive(false );
+        if (Invinsiblewallmidlele2 != null)
+            Invinsiblewallmidlele2.SetActive(false);
+        if (Invinsiblewallafter2 != null)
+            Invinsiblewallafter2.SetActive(false);
+
         // AudioSource konfigurieren
         knockAudio.spatialBlend = 1f;
         knockAudio.loop = true;
@@ -47,13 +71,19 @@ public class KnockAndDialogController : MonoBehaviour
 
     void Update()
     {
-
-
         // 1) Starte Klopfen, sobald alle Aufgaben erledigt sind
         if (!isKnocking && GameManagerIntro.Instance.allTasksDone)
         {
             knockAudio.Play();
             isKnocking = true;
+            if (Invinsiblewallbefor != null)
+                Invinsiblewallbefor.SetActive(false); 
+            if (Invinsiblewallmidlele != null)
+                Invinsiblewallmidlele.SetActive(true);
+            if (Invinsiblewallbefor2 != null)
+                Invinsiblewallbefor2.SetActive(false);
+            if (Invinsiblewallmidlele2 != null)
+                Invinsiblewallmidlele2.SetActive(true);
         }
 
         if (isKnocking)
@@ -121,7 +151,21 @@ public class KnockAndDialogController : MonoBehaviour
         // h) Aufräumen
         Destroy(npc);
 
-       
+        // i) Monster-Tür jetzt aktivieren
+        if (monsterDoor != null)
+            monsterDoor.SetActive(true);
+        if (MonsterDoorFrameWithoutcode !=null)
+            MonsterDoorFrameWithoutcode.SetActive(false);
+        if (Invinsiblewallmidlele != null)
+            Invinsiblewallmidlele.SetActive(false);
+        if (Invinsiblewallafter != null)
+            Invinsiblewallafter.SetActive(true);
+        if (Invinsiblewallmidlele2 != null)
+            Invinsiblewallmidlele2.SetActive(false);
+        if (Invinsiblewallafter2 != null)
+            Invinsiblewallafter2.SetActive(true);
+
+        // j) Diese Szene nicht länger als Interactable behalten
         gameObject.layer = LayerMask.NameToLayer("Default");
     }
 
@@ -137,4 +181,3 @@ public class KnockAndDialogController : MonoBehaviour
         t.localRotation = to;
     }
 }
-
