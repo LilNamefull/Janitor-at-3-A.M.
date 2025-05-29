@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 [RequireComponent(typeof(Collider))]
 public class DialogueTrigger : MonoBehaviour
@@ -7,9 +8,13 @@ public class DialogueTrigger : MonoBehaviour
     [TextArea(2, 5)]
     public string[] dialogueLines;
 
-    [Header("Spawn on Complete")]
-    public GameObject spawnPrefab;    // wird nach vollständigem Dialog instanziert
-    public Transform spawnPoint;      // Position/Rotation für das neue Objekt
+    [Header("Spawn on Complete (1)")]
+    public GameObject spawnPrefab1;
+    public Transform spawnPoint1;
+
+    [Header("Spawn on Complete (2)")]
+    public GameObject spawnPrefab2;
+    public Transform spawnPoint2;
 
     [Header("Interaction")]
     public float interactDistance = 2f;
@@ -17,17 +22,21 @@ public class DialogueTrigger : MonoBehaviour
     private Transform player;
     private Camera cam;
     private Collider col;
+    private bool triggered = false;
 
     void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player").transform;
         cam = Camera.main;
         col = GetComponent<Collider>();
+        col.isTrigger = false; // wir nutzen Raycast, kein Trigger
     }
 
     void Update()
     {
-        // 1) Distanzprüfung
+        if (triggered) return;
+
+        // 1) Distanz prüfen
         if (Vector3.Distance(transform.position, player.position) > interactDistance)
             return;
 
@@ -37,9 +46,30 @@ public class DialogueTrigger : MonoBehaviour
         {
             if (hit.collider == col && Input.GetKeyDown(KeyCode.E))
             {
-                // Dialog mit individuellem Spawn starten
-                DialogueManager.Instance.StartDialogue(dialogueLines, spawnPrefab, spawnPoint);
+                triggered = true; // Nur einmal
+                // Dialog starten
+                DialogueManager.Instance.StartDialogue(dialogueLines);
+                // Coroutine starten, die auf Ende wartet und dann spawnt
+                StartCoroutine(SpawnAfterDialogue());
             }
+        }
+    }
+
+    private IEnumerator SpawnAfterDialogue()
+    {
+        // Warte bis der Dialog wirklich beendet ist
+        yield return new WaitUntil(() => !DialogueManager.Instance.IsInDialogue);
+
+        // 1) Erstes Objekt
+        if (spawnPrefab1 != null && spawnPoint1 != null)
+        {
+            Instantiate(spawnPrefab1, spawnPoint1.position, spawnPoint1.rotation);
+        }
+
+        // 2) Zweites Objekt
+        if (spawnPrefab2 != null && spawnPoint2 != null)
+        {
+            Instantiate(spawnPrefab2, spawnPoint2.position, spawnPoint2.rotation);
         }
     }
 }

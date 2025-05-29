@@ -1,0 +1,169 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2914971807049359025
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4579740542337396190}
+  - component: {fileID: 3890822298072677212}
+  - component: {fileID: 5404717673695554037}
+  - component: {fileID: 8757469479397186785}
+  - component: {fileID: 7699680318042273627}
+  m_Layer: 0
+  m_Name: NPC_Maddison
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4579740542337396190
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2914971807049359025}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 7.63, y: 0, z: 7.1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!33 &3890822298072677212
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2914971807049359025}
+  m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!23 &5404717673695554037
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2914971807049359025}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!136 &8757469479397186785
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2914971807049359025}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &7699680318042273627
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2914971807049359025}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67d1209b8a5607f47ae93622f47c9c71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dialogueLines:
+  - "M.:*crying* What the hell old man?! Ever heard of a girls\u2019 bathroom?! This
+    is definitely not where you belong.\n"
+  - 'J.: Are you Maddison?
+
+'
+  - 'M.: Of course I am? Ever seen anyone else look this flawless?
+
+'
+  - 'J.: I need your half of the scroll.
+
+'
+  - "M.: Oh, you need something? Pfft. That\u2019s so funny, \u2018cause I needed
+    my life to not turn into a horror movie! Ugh! Do I look like I care about your
+    little quest right now?\n"
+  - 'J.: Look, I get you''re upset, but I can help you, if you just tell me where
+    the scroll is.
+
+'
+  - 'M.: *sniffs* ...Really?
+
+'
+  - 'J.: Yes.
+
+'
+  - 'M.: Fiiiine *rolls her eyes* I read a bit of the scroll. Its some kind of contract
+    with the devil. There is a passage inside about revoking the whole thing and
+    putting an end to this freak show. Look, I''ll show you where my half is, only
+    if you promise to revoke the contract and stop the principal. And if you''re
+    lying to me, I''ll personally make sure to haunt your sorry ass forever.
+
+'
+  - 'J.: I promise, don''t worry.
+
+'
+  - 'M.: Okay so, uuuuuhmm. As you see these shoes are cunty as fuck but I can''t
+    really run in them, so my first instinct was to hide in the closest room which
+    is the gross old bio lab. I hate the stank in there but it was either that or
+    dumping my shoes - which is a big no-no obviiiiii...'
+  spawnPrefab1: {fileID: 3328054047216175550, guid: fc63dd53662932a42a4e501374968a09, type: 3}
+  spawnPoint1: {fileID: 8998874227073171586, guid: 01063922367d4094d83f8e5083c462be, type: 3}
+  spawnPrefab2: {fileID: 0}
+  spawnPoint2: {fileID: 0}
+  interactDistance: 2
