@@ -23,23 +23,21 @@ public class enemyAI : MonoBehaviour
     [Header("Spieler & Jagd")]
     public Transform player;
     public float catchDistance = 1.5f;
-    public float fieldOfViewAngle = 110f;    // Sichtwinkel des Monsters
+    public float fieldOfViewAngle = 110f;    // Sichtwinkel
     public float sightRayLength = 15f;     // Raycast-Distanz
-    public Vector3 rayCastOffset;            // Höhenversatz der Raycasts
+    public Vector3 rayCastOffset;             // Raycast-Höhenoffset
 
     [Header("Sonstige")]
     public string deathScene;
     public GameObject hideText, stopHideText;
 
     [Header("Distanzausgleich")]
-    [Tooltip("Wenn das Monster weiter als X Meter vom Spieler entfernt ist, wähle sofort ein Ziel in Spieler-Nähe.")]
-    public float maxAllowedDistance = 150f;
+    [Tooltip("Abstand (Meter), ab dem das Monster zum Spieler-nächsten Ziel wechselt")]
+    public float maxAllowedDistance = 100f;
 
-    // interner Timer-Wert, um nicht dauernd neu zu wählen
+    // Kleiner Cooldown, damit Forced Repath nicht in jedem Frame erneut aktiviert wird
     private float timeSinceForcedRepath = 0f;
     private float forcedRepathCooldown = 2f;
-    // (damit wir nicht in jedem Frame neu zum nächsten Ziel springen, 
-    //  sondern erst nach ein paar Sekunden erneut prüfen)
 
     public bool walking = true;
     public bool chasing = false;
@@ -49,20 +47,28 @@ public class enemyAI : MonoBehaviour
     private int lastDestIndex = -1;
     private float aiDistance;
 
+    // Wenn true, läuft das Monster gerade auf das erzwungene Ziel in Spieler-Nähe
+    private bool forcedTargetActive = false;
+
+    // Öffentliche Eigenschaft, um von außen (z. B. hidingPlace) zu prüfen, ob gejagt wird
+    public bool IsChasing
+    {
+        get { return chasing; }
+    }
+
     void Start()
     {
         walking = true;
         chasing = false;
+        forcedTargetActive = false;
 
-        // 1) Erster Zufallsziel-Index
+        // Erstes zufälliges Ziel auswählen
         if (destinations.Count > 0)
         {
             int r = Random.Range(0, destinations.Count);
             currentDest = destinations[r];
             lastDestIndex = r;
         }
-
-        // 2) Timer initialisieren
         timeSinceForcedRepath = forcedRepathCooldown;
     }
 
@@ -71,29 +77,34 @@ public class enemyAI : MonoBehaviour
         // Abstand zum Spieler berechnen
         aiDistance = Vector3.Distance(player.position, transform.position);
 
-        Debug.Log($"[enemyAI] Distance to player: {aiDistance:F2} meters");
+        //  –– DEBUG: Abstand ausgeben ––
+        Debug.Log($"[enemyAI] Distance to player: {aiDistance:F2} m");
 
-        // 1) Forced Repath: Wenn zu weit weg vom Spieler UND nicht gerade in Jagd
-        if (!chasing)
+        // 1) Forced Repath (nur wenn nicht jagen und kein erzwungenes Ziel aktiv)
+        if (!chasing && !forcedTargetActive)
         {
             timeSinceForcedRepath += Time.deltaTime;
             if (aiDistance > maxAllowedDistance && timeSinceForcedRepath >= forcedRepathCooldown)
             {
-                // Wähle das Destination, das dem Spieler am nächsten ist
+                // Wähle das Ziel, das dem Spieler am nächsten ist
                 ChooseNearestDestinationToPlayer();
-                // Setze walking-Flag und Animation
+                forcedTargetActive = true;   // Merke: jetzt ist ein erzwungenes Ziel aktiv
+
+                // Monster in Wander‐Modus versetzen (Animation & Speed)
                 walking = true;
                 ai.speed = walkSpeed;
                 aiAnim.ResetTrigger("sprint");
                 aiAnim.ResetTrigger("idle");
                 aiAnim.SetTrigger("walk");
 
-                // Timer zurücksetzen
                 timeSinceForcedRepath = 0f;
+
+                // SOFORTRÜCKKEHR, damit wir nicht im selben Frame in die Idle-Logik gelangen
+                return;
             }
         }
 
-        // 2) Sichtfeld‐Check: Wenn der Spieler im Sichtkegel erkannt wird, sofort jagd
+        // 2) Sichtfeld‐Check: Wird der Spieler im Kegel erkannt?
         if (IsPlayerInSight() && !chasing)
         {
             chasing = true;
@@ -106,7 +117,7 @@ public class enemyAI : MonoBehaviour
             aiAnim.ResetTrigger("idle");
         }
 
-        // 3) Jagdlogik
+        // 3) Jagd‐Logik
         if (chasing)
         {
             ai.destination = player.position;
@@ -117,6 +128,7 @@ public class enemyAI : MonoBehaviour
 
             if (aiDistance <= catchDistance)
             {
+                // Spieler „packen“
                 player.gameObject.SetActive(false);
                 aiAnim.ResetTrigger("walk");
                 aiAnim.ResetTrigger("idle");
@@ -126,7 +138,7 @@ public class enemyAI : MonoBehaviour
                 chasing = false;
             }
         }
-        // 4) Wandern/Idle, wenn nicht in Jagd
+        // 4) Wander/Idle, wenn nicht in Jagd
         else if (walking)
         {
             dest = currentDest.position;
@@ -136,14 +148,24 @@ public class enemyAI : MonoBehaviour
             aiAnim.ResetTrigger("idle");
             aiAnim.SetTrigger("walk");
 
+            // Sobald wir am Ziel sind:
             if (ai.remainingDistance <= ai.stoppingDistance)
             {
+                // Wenn das Ziel durch Forced Repath gewählt wurde:
+                if (forcedTargetActive)
+                {
+                    // Erzwungenes Ziel ist erreicht – abgeschlossene Forced Repath
+                    forcedTargetActive = false;
+                }
+
+                // Animation auf Idle
                 aiAnim.ResetTrigger("sprint");
                 aiAnim.ResetTrigger("walk");
                 aiAnim.ResetTrigger("idle");
                 aiAnim.SetTrigger("idle");
                 ai.speed = 0;
 
+                // Starte die zufällige Idle‐Phase (neues Zufallsziel abseits Forced Repath)
                 StopCoroutine("stayIdle");
                 StartCoroutine("stayIdle");
                 walking = false;
@@ -151,7 +173,9 @@ public class enemyAI : MonoBehaviour
         }
     }
 
-    // Wählt das Ziel (aus destinations), das zum Spieler den geringsten Abstand hat
+    /// <summary>
+    /// Wählt aus `destinations` jenes Transform aus, das aktuell den kürzesten Abstand zum Spieler besitzt.
+    /// </summary>
     private void ChooseNearestDestinationToPlayer()
     {
         if (destinations.Count == 0) return;
@@ -173,15 +197,17 @@ public class enemyAI : MonoBehaviour
         lastDestIndex = bestIndex;
     }
 
-    // Idle‐Routine: Nach zufälliger Wartezeit neues Zufallsziel wählen
+    /// <summary>
+    /// Idle‐Routine: Das Monster wartet eine zufällige Zeit und wählt dann ein neues,
+    /// zufälliges Ziel (kein Forced Repath).
+    /// </summary>
     IEnumerator stayIdle()
     {
         idleTime = Random.Range(minIdleTime, maxIdleTime);
         yield return new WaitForSeconds(idleTime);
 
         walking = true;
-
-        // Zufallsziel, das sich vom zuletzt gewählten unterscheidet (falls möglich)
+        // Neues, anderes Zufallsziel (wenn möglich)
         int newIndex = lastDestIndex;
         if (destinations.Count > 1)
         {
@@ -194,14 +220,15 @@ public class enemyAI : MonoBehaviour
         currentDest = destinations[newIndex];
     }
 
-    // Prüft, ob der Spieler innerhalb des Sichtkegels (Field of View) ist
+    /// <summary>
+    /// Prüft, ob der Spieler innerhalb des Sichtkegels liegt und nicht durch Hindernisse verdeckt ist.
+    /// </summary>
     bool IsPlayerInSight()
     {
         Vector3 dirToPlayer = (player.position - transform.position).normalized;
         Debug.DrawRay(transform.position + rayCastOffset, dirToPlayer * sightRayLength, Color.green);
 
         float angle = Vector3.Angle(transform.forward, dirToPlayer);
-        // Debug.Log("Angle: " + angle);
         if (angle < fieldOfViewAngle / 2f)
         {
             RaycastHit hit;
@@ -210,22 +237,22 @@ public class enemyAI : MonoBehaviour
                 Debug.DrawRay(transform.position + rayCastOffset, dirToPlayer * hit.distance, Color.red);
                 if (hit.collider.CompareTag("Player"))
                 {
-                    // Debug.Log("Player detected!");
                     return true;
                 }
-                // else Debug.Log("Raycast hit something else: " + hit.collider.name);
             }
         }
         return false;
     }
 
+    /// <summary>
+    /// Stoppt die aktuelle Verfolgung (wenn nötig) und wählt ein neues Zufallsziel (kein Forced).
+    /// </summary>
     public void stopChase()
     {
         walking = true;
         chasing = false;
         StopCoroutine("chaseRoutine");
 
-        // Direkt eine neue Zufallsdestination (nicht zuletzt gewählte)
         int newIndex = lastDestIndex;
         if (destinations.Count > 1)
         {
