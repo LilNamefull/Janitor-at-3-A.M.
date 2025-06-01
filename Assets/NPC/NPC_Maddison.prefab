@@ -162,7 +162,7 @@ MonoBehaviour:
     really run in them, so my first instinct was to hide in the closest room which
     is the gross old bio lab. I hate the stank in there but it was either that or
     dumping my shoes - which is a big no-no obviiiiii...'
-  spawnPrefab1: {fileID: 3328054047216175550, guid: fc63dd53662932a42a4e501374968a09, type: 3}
+  spawnPrefab1: {fileID: 1972832224978904816, guid: c78802bf6d95a3344a89fef4aa5a75c8, type: 3}
   spawnPoint1: {fileID: 8998874227073171586, guid: 01063922367d4094d83f8e5083c462be, type: 3}
   spawnPrefab2: {fileID: 0}
   spawnPoint2: {fileID: 0}

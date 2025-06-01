@@ -159,7 +159,7 @@ MonoBehaviour:
   - 'Chad: Aight, big boy. The last thing I remember is sprinting to the main exit
     but the damn door was locked. So I headed back into room Algebra 2 to hide out
     in. After that... I dunno - I think that was it, I guess.'
-  spawnPrefab1: {fileID: 3328054047216175550, guid: fc63dd53662932a42a4e501374968a09, type: 3}
+  spawnPrefab1: {fileID: 8064226487575135456, guid: 3f29889a2237d0a44a5e6e10a309f784, type: 3}
   spawnPoint1: {fileID: 258433100225969469, guid: a81b00d09bd24bb47afc4ce4b1a0f201, type: 3}
   spawnPrefab2: {fileID: 0}
   spawnPoint2: {fileID: 0}

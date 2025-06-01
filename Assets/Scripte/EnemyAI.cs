@@ -6,8 +6,11 @@ using UnityEngine.SceneManagement;
 
 public class enemyAI : MonoBehaviour
 {
-    [Header("Agent & Ziele")]
+    // -------------------- PUBLIC FIELDS --------------------
+    [Header("NavMesh Agent")]
     public NavMeshAgent ai;
+
+    [Header("Patrol-Zielpunkte")]
     public List<Transform> destinations;
 
     [Header("Animationen")]
@@ -18,196 +21,231 @@ public class enemyAI : MonoBehaviour
     [Header("Idle-Timing")]
     public float minIdleTime = 1f;
     public float maxIdleTime = 3f;
-    private float idleTime;
 
     [Header("Spieler & Jagd")]
     public Transform player;
     public float catchDistance = 1.5f;
+    public float chaseAbortDistance = 50f;     // Beginnt Puffer, wenn Spieler weiter weg ist
+    public float lostSightThreshold = 1f;      // Sekunden, die Spieler verloren sein darf, bevor Chase abbricht
     public float fieldOfViewAngle = 110f;    // Sichtwinkel
-    public float sightRayLength = 15f;     // Raycast-Distanz
-    public Vector3 rayCastOffset;             // Raycast-Höhenoffset
+    public float sightRayLength = 15f;     // Raycast-Länge
+    public Vector3 rayCastOffset;             // Raycast-Offset
 
-    [Header("Sonstige")]
+    [Header("Forced Repath")]
+    public float maxAllowedDistance = 100f;  // Wechsel zu ForcedRepath, wenn weiter entfernt
+    public float forcedRepathCooldown = 2f;    // Cooldown in Sekunden
+
+    [Header("Tod & Szenenwechsel")]
     public string deathScene;
-    public GameObject hideText, stopHideText;
+    public float deathDelay = 2f;
 
-    [Header("Distanzausgleich")]
-    [Tooltip("Abstand (Meter), ab dem das Monster zum Spieler-nächsten Ziel wechselt")]
-    public float maxAllowedDistance = 100f;
 
-    // Kleiner Cooldown, damit Forced Repath nicht in jedem Frame erneut aktiviert wird
-    private float timeSinceForcedRepath = 0f;
-    private float forcedRepathCooldown = 2f;
+    // -------------------- PRIVATE FIELDS --------------------
+    private enum State { Idle, Patrol, ForcedRepath, Chase }
+    private State currentState;
 
-    public bool walking = true;
-    public bool chasing = false;
-
-    private Transform currentDest;
-    private Vector3 dest;
     private int lastDestIndex = -1;
-    private float aiDistance;
+    private Transform currentDest;
+    private bool isIdleRoutineRunning = false;
+    private float forcedRepathTimer = 0f;
+    private float aiDistance = 0f;
+    private float lostSightTimer = 0f;
 
-    // Wenn true, läuft das Monster gerade auf das erzwungene Ziel in Spieler-Nähe
-    private bool forcedTargetActive = false;
+    // **************** P U B L I C   P R O P E R T I E S ****************
+    public bool IsChasing => currentState == State.Chase;
 
-    // Öffentliche Eigenschaft, um von außen (z. B. hidingPlace) zu prüfen, ob gejagt wird
-    public bool IsChasing
+
+    // -------------------- UNITY CALLBACKS --------------------
+
+    void OnEnable()
     {
-        get { return chasing; }
-    }
+        // 1) State initialisieren
+        currentState = State.Patrol;
+        forcedRepathTimer = forcedRepathCooldown;
+        lostSightTimer = 0f;
+        isIdleRoutineRunning = false;
 
-    void Start()
-    {
-        walking = true;
-        chasing = false;
-        forcedTargetActive = false;
+        // 2) Anfangsabstand berechnen (Debug)
+        aiDistance = Vector3.Distance(player.position, transform.position);
+        Debug.Log($"[enemyAI|OnEnable] Start-Distance to player: {aiDistance:F2} m.");
 
-        // Erstes zufälliges Ziel auswählen
-        if (destinations.Count > 0)
+        // 3) Erstes Patrol-Ziel wählen
+        if (destinations != null && destinations.Count > 0)
         {
             int r = Random.Range(0, destinations.Count);
             currentDest = destinations[r];
             lastDestIndex = r;
+            ai.destination = currentDest.position;
+            ai.speed = walkSpeed;
+            ai.isStopped = false;
+            aiAnim.SetTrigger("walk");
         }
-        timeSinceForcedRepath = forcedRepathCooldown;
+        else
+        {
+            Debug.LogWarning("[enemyAI] Keine Ziele (destinations) zugewiesen!");
+        }
     }
 
     void Update()
     {
-        // Abstand zum Spieler berechnen
+        // 1) Aktuellen Abstand zum Spieler berechnen
         aiDistance = Vector3.Distance(player.position, transform.position);
+        // Debug-Ausgabe
+        Debug.Log($"[enemyAI|Update] Distance to player: {aiDistance:F2} m (State: {currentState})");
 
-        //  –– DEBUG: Abstand ausgeben ––
-        Debug.Log($"[enemyAI] Distance to player: {aiDistance:F2} m");
-
-        // 1) Forced Repath (nur wenn nicht jagen und kein erzwungenes Ziel aktiv)
-        if (!chasing && !forcedTargetActive)
+        // 2) Wenn im Chase-State, verwende gepufferte Chase-Logik
+        if (currentState == State.Chase)
         {
-            timeSinceForcedRepath += Time.deltaTime;
-            if (aiDistance > maxAllowedDistance && timeSinceForcedRepath >= forcedRepathCooldown)
+            RunChaseLogic();
+            return;
+        }
+
+        // 3) Forced Repath prüfen (wenn nicht in Chase/ForcedRepath)
+        forcedRepathTimer += Time.deltaTime;
+        if (currentState != State.Chase
+            && currentState != State.ForcedRepath
+            && aiDistance > maxAllowedDistance
+            && forcedRepathTimer >= forcedRepathCooldown)
+        {
+            StartForcedRepath();
+            return;
+        }
+
+        // 4) Sichtfeld-Check zum Starten der Chase (nur, wenn nicht bereits im Chase)
+        if (currentState != State.Chase && IsPlayerInSight())
+        {
+            StartChase();
+            return;
+        }
+
+        // 5) Sonstige State-Logik: Patrol, ForcedRepath, Idle
+        switch (currentState)
+        {
+            case State.Patrol:
+                RunPatrolLogic();
+                break;
+            case State.ForcedRepath:
+                RunForcedRepathLogic();
+                break;
+            case State.Idle:
+                // Idle-Routine läuft → nichts weiter machen
+                break;
+        }
+    }
+
+
+    // -------------------- STATE-METHODEN --------------------
+
+    private void RunPatrolLogic()
+    {
+        if (currentDest == null) return;
+
+        // Wenn Ziel erreicht, direkt in Idle
+        if (!ai.pathPending && ai.remainingDistance <= ai.stoppingDistance)
+        {
+            EnterIdleState();
+        }
+    }
+
+    private void RunForcedRepathLogic()
+    {
+        if (currentDest == null) return;
+
+        // Wenn Forced-Repath-Ziel erreicht, in Idle übergehen
+        if (!ai.pathPending && ai.remainingDistance <= ai.stoppingDistance)
+        {
+            forcedRepathTimer = 0f;
+            EnterIdleState();
+        }
+    }
+
+    private void RunChaseLogic()
+    {
+        bool tooFar = aiDistance > chaseAbortDistance;
+        bool notInSight = !IsPlayerInSight();
+
+        // 1) Wenn zu weit weg ODER nicht im Sichtfeld, starte lostSight-Timer
+        if (tooFar || notInSight)
+        {
+            lostSightTimer += Time.deltaTime;
+            // Reset, sobald wieder beides OK ist
+            if (!tooFar && !notInSight)
             {
-                // Wähle das Ziel, das dem Spieler am nächsten ist
-                ChooseNearestDestinationToPlayer();
-                forcedTargetActive = true;   // Merke: jetzt ist ein erzwungenes Ziel aktiv
-
-                // Monster in Wander‐Modus versetzen (Animation & Speed)
-                walking = true;
-                ai.speed = walkSpeed;
-                aiAnim.ResetTrigger("sprint");
-                aiAnim.ResetTrigger("idle");
-                aiAnim.SetTrigger("walk");
-
-                timeSinceForcedRepath = 0f;
-
-                // SOFORTRÜCKKEHR, damit wir nicht im selben Frame in die Idle-Logik gelangen
+                lostSightTimer = 0f;
+            }
+            // Nur nach Überschreiten des Thresholds abbrechen
+            if (lostSightTimer >= lostSightThreshold)
+            {
+                Debug.Log($"[enemyAI] Abbruch Chase nach {lostSightTimer:F2}s (zu weit oder nicht im Sichtfeld).");
+                CancelChase();
                 return;
             }
         }
-
-        // 2) Sichtfeld‐Check: Wird der Spieler im Kegel erkannt?
-        if (IsPlayerInSight() && !chasing)
+        else
         {
-            chasing = true;
-            walking = false;
-            StopCoroutine("stayIdle");
-
-            ai.speed = chaseSpeed;
-            aiAnim.SetTrigger("sprint");
-            aiAnim.ResetTrigger("walk");
-            aiAnim.ResetTrigger("idle");
+            // beides OK → Timer zurücksetzen
+            lostSightTimer = 0f;
         }
 
-        // 3) Jagd‐Logik
-        if (chasing)
+        // 2) Setze Ziel auf den Spieler (flüssiges Verfolgen)
+        if (ai.isStopped)
+            ai.isStopped = false;
+
+        ai.destination = player.position;
+        // Geschwindigkeit und Animation brauchen wir jetzt nicht jeden Frame neu setzen:
+        // Nur beim Einstieg in Chase wurde ai.speed = chaseSpeed und Animator 'sprint' getriggert.
+
+        // 3) Wenn sehr nahe genug, Jumpscare auslösen
+        if (aiDistance <= catchDistance)
         {
-            ai.destination = player.position;
-            ai.speed = chaseSpeed;
+            player.gameObject.SetActive(false);
             aiAnim.ResetTrigger("walk");
             aiAnim.ResetTrigger("idle");
-            aiAnim.SetTrigger("sprint");
-
-            if (aiDistance <= catchDistance)
-            {
-                // Spieler „packen“
-                player.gameObject.SetActive(false);
-                aiAnim.ResetTrigger("walk");
-                aiAnim.ResetTrigger("idle");
-                aiAnim.ResetTrigger("sprint");
-                aiAnim.SetTrigger("jumpscare");
-                StartCoroutine(deathRoutine());
-                chasing = false;
-            }
-        }
-        // 4) Wander/Idle, wenn nicht in Jagd
-        else if (walking)
-        {
-            dest = currentDest.position;
-            ai.destination = dest;
-            ai.speed = walkSpeed;
             aiAnim.ResetTrigger("sprint");
-            aiAnim.ResetTrigger("idle");
-            aiAnim.SetTrigger("walk");
-
-            // Sobald wir am Ziel sind:
-            if (ai.remainingDistance <= ai.stoppingDistance)
-            {
-                // Wenn das Ziel durch Forced Repath gewählt wurde:
-                if (forcedTargetActive)
-                {
-                    // Erzwungenes Ziel ist erreicht – abgeschlossene Forced Repath
-                    forcedTargetActive = false;
-                }
-
-                // Animation auf Idle
-                aiAnim.ResetTrigger("sprint");
-                aiAnim.ResetTrigger("walk");
-                aiAnim.ResetTrigger("idle");
-                aiAnim.SetTrigger("idle");
-                ai.speed = 0;
-
-                // Starte die zufällige Idle‐Phase (neues Zufallsziel abseits Forced Repath)
-                StopCoroutine("stayIdle");
-                StartCoroutine("stayIdle");
-                walking = false;
-            }
+            aiAnim.SetTrigger("jumpscare");
+            StartCoroutine(DeathRoutine());
+            currentState = State.Idle;
         }
     }
 
-    /// <summary>
-    /// Wählt aus `destinations` jenes Transform aus, das aktuell den kürzesten Abstand zum Spieler besitzt.
-    /// </summary>
-    private void ChooseNearestDestinationToPlayer()
+
+    // -------------------- STATE-WECHSEL & HILFSMETHODEN --------------------
+
+    private void StartChase()
     {
+        currentState = State.Chase;
+        ai.speed = chaseSpeed;
+        ai.isStopped = false;          // Agent darf laufen
+        aiAnim.SetTrigger("sprint");   // Nur EINMAL beim Zustandswechsel
+        aiAnim.ResetTrigger("walk");
+        aiAnim.ResetTrigger("idle");
+
+        // Reset des Lost‐Sight‐Timers
+        lostSightTimer = 0f;
+        // Stopp Idle‐Routine, falls sie gerade lief
+        StopIdleRoutine();
+    }
+
+    private void StartForcedRepath()
+    {
+        // Wähle Ziel, das dem Spieler am nächsten ist
+        ChooseNearestDestinationToPlayer();
+        currentState = State.ForcedRepath;
+        ai.destination = currentDest.position;
+        ai.speed = walkSpeed;
+        ai.isStopped = false;
+        aiAnim.SetTrigger("walk");   // Nur EINMAL beim Zustandswechsel
+        aiAnim.ResetTrigger("idle");
+        forcedRepathTimer = 0f;
+
+        StopIdleRoutine();
+    }
+
+    private void StartPatrol()
+    {
+        // Wähle ein zufälliges Ziel, das sich vom letzten unterscheidet
         if (destinations.Count == 0) return;
 
-        float bestDist = float.MaxValue;
-        int bestIndex = lastDestIndex;
-
-        for (int i = 0; i < destinations.Count; i++)
-        {
-            float d = Vector3.Distance(player.position, destinations[i].position);
-            if (d < bestDist)
-            {
-                bestDist = d;
-                bestIndex = i;
-            }
-        }
-
-        currentDest = destinations[bestIndex];
-        lastDestIndex = bestIndex;
-    }
-
-    /// <summary>
-    /// Idle‐Routine: Das Monster wartet eine zufällige Zeit und wählt dann ein neues,
-    /// zufälliges Ziel (kein Forced Repath).
-    /// </summary>
-    IEnumerator stayIdle()
-    {
-        idleTime = Random.Range(minIdleTime, maxIdleTime);
-        yield return new WaitForSeconds(idleTime);
-
-        walking = true;
-        // Neues, anderes Zufallsziel (wenn möglich)
         int newIndex = lastDestIndex;
         if (destinations.Count > 1)
         {
@@ -218,18 +256,89 @@ public class enemyAI : MonoBehaviour
         }
         lastDestIndex = newIndex;
         currentDest = destinations[newIndex];
+        currentState = State.Patrol;
+        ai.destination = currentDest.position;
+        ai.speed = walkSpeed;
+        ai.isStopped = false;
+        aiAnim.SetTrigger("walk");   // Nur EINMAL beim Zustandswechsel
+        aiAnim.ResetTrigger("idle");
     }
 
-    /// <summary>
-    /// Prüft, ob der Spieler innerhalb des Sichtkegels liegt und nicht durch Hindernisse verdeckt ist.
-    /// </summary>
+    private void EnterIdleState()
+    {
+        currentState = State.Idle;
+        ai.isStopped = true;         // Laufen stoppen
+        aiAnim.ResetTrigger("walk");
+        aiAnim.ResetTrigger("sprint");
+        aiAnim.SetTrigger("idle");   // Nur EINMAL beim Zustandswechsel
+
+        lostSightTimer = 0f;
+        StartIdleRoutine();
+    }
+
+    private void ChooseNearestDestinationToPlayer()
+    {
+        if (destinations.Count == 0) return;
+
+        float bestDist = float.MaxValue;
+        int bestIdx = lastDestIndex;
+        for (int i = 0; i < destinations.Count; i++)
+        {
+            float d = Vector3.Distance(player.position, destinations[i].position);
+            if (d < bestDist)
+            {
+                bestDist = d;
+                bestIdx = i;
+            }
+        }
+        currentDest = destinations[bestIdx];
+        lastDestIndex = bestIdx;
+    }
+
+
+    // -------------------- IDLE-ROUTINE --------------------
+
+    private void StartIdleRoutine()
+    {
+        if (!isIdleRoutineRunning)
+        {
+            isIdleRoutineRunning = true;
+            StartCoroutine(IdleCoroutine());
+        }
+    }
+
+    private void StopIdleRoutine()
+    {
+        if (isIdleRoutineRunning)
+        {
+            StopCoroutine(IdleCoroutine());
+            isIdleRoutineRunning = false;
+        }
+    }
+
+    IEnumerator IdleCoroutine()
+    {
+        float wait = Random.Range(minIdleTime, maxIdleTime);
+        yield return new WaitForSeconds(wait);
+
+        // Wenn nach Wartezeit immer noch Idle, wechsle zu Patrol
+        if (currentState == State.Idle)
+        {
+            StartPatrol();
+        }
+        isIdleRoutineRunning = false;
+    }
+
+
+    // -------------------- SIGHT & DEATH --------------------
+
     bool IsPlayerInSight()
     {
         Vector3 dirToPlayer = (player.position - transform.position).normalized;
         Debug.DrawRay(transform.position + rayCastOffset, dirToPlayer * sightRayLength, Color.green);
 
         float angle = Vector3.Angle(transform.forward, dirToPlayer);
-        if (angle < fieldOfViewAngle / 2f)
+        if (angle < fieldOfViewAngle * 0.5f)
         {
             RaycastHit hit;
             if (Physics.Raycast(transform.position + rayCastOffset, dirToPlayer, out hit, sightRayLength))
@@ -244,30 +353,30 @@ public class enemyAI : MonoBehaviour
         return false;
     }
 
-    /// <summary>
-    /// Stoppt die aktuelle Verfolgung (wenn nötig) und wählt ein neues Zufallsziel (kein Forced).
-    /// </summary>
-    public void stopChase()
+    IEnumerator DeathRoutine()
     {
-        walking = true;
-        chasing = false;
-        StopCoroutine("chaseRoutine");
-
-        int newIndex = lastDestIndex;
-        if (destinations.Count > 1)
-        {
-            while (newIndex == lastDestIndex)
-            {
-                newIndex = Random.Range(0, destinations.Count);
-            }
-        }
-        lastDestIndex = newIndex;
-        currentDest = destinations[newIndex];
+        yield return new WaitForSeconds(deathDelay);
+        SceneManager.LoadScene(deathScene);
     }
 
-    IEnumerator deathRoutine()
+
+    // ***************** ÖFFENTLICHE METHODE ZUM ABBRECHEN DER JAGD *****************
+
+    /// <summary>
+    /// Bricht die aktuelle Jagd (Chase) ab und wechselt in Idle.
+    /// </summary>
+    public void CancelChase()
     {
-        yield return new WaitForSeconds(2f);
-        SceneManager.LoadScene(deathScene);
+        if (currentState == State.Chase)
+        {
+            currentState = State.Idle;
+            ai.isStopped = true;          // Agent anhalten
+            aiAnim.ResetTrigger("sprint");
+            aiAnim.ResetTrigger("walk");
+            aiAnim.SetTrigger("idle");    // Nur EINMAL beim Zustandswechsel
+
+            StartIdleRoutine();
+            lostSightTimer = 0f;
+        }
     }
 }
