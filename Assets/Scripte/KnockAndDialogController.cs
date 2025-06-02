@@ -5,6 +5,7 @@ public class KnockAndDialogController : MonoBehaviour
 {
     [Header("Audio")]
     public AudioSource knockAudio;       // 3D AudioSource am Locker
+    public AudioSource backgroundMusic;
 
     [Header("Ranges")]
     public float knockMaxDistance = 12f; // Hörweite
@@ -40,6 +41,8 @@ public class KnockAndDialogController : MonoBehaviour
     private bool isKnocking = false;
     private bool cutsceneStarted = false;
 
+    public GameObject hotbarUI;
+
     void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player")?.transform;
@@ -71,9 +74,13 @@ public class KnockAndDialogController : MonoBehaviour
 
     void Update()
     {
+
+
         // 1) Starte Klopfen, sobald alle Aufgaben erledigt sind
         if (!isKnocking && GameManagerIntro.Instance.allTasksDone)
         {
+            if (backgroundMusic != null && backgroundMusic.isPlaying)
+                backgroundMusic.Stop();
             knockAudio.Play();
             isKnocking = true;
             if (Invinsiblewallbefor != null)
@@ -116,6 +123,8 @@ public class KnockAndDialogController : MonoBehaviour
                 if (GameManagerIntro.Instance.chairsText != null)
                     GameManagerIntro.Instance.chairsText.gameObject.SetActive(false);
 
+                if (hotbarUI != null)
+                    hotbarUI.SetActive(false);
 
                 StartCoroutine(DialogSequence());
             }
@@ -128,6 +137,7 @@ public class KnockAndDialogController : MonoBehaviour
         yield return new WaitForSecondsRealtime(dialogDelay);
 
         // b) Dialog 1 starten
+        DialogueManager.Instance.exitButton.gameObject.SetActive(false);
         DialogueManager.Instance.StartDialogue(dialogAfterOpen);
         yield return new WaitUntil(() => !DialogueManager.Instance.IsInDialogue);
 
@@ -141,6 +151,7 @@ public class KnockAndDialogController : MonoBehaviour
         yield return RotateLocal(cameraHolder, origLocalRot, targetLocalRot, rotateDuration);
 
         // f) NPC spawnen + Dialog 2 starten
+        DialogueManager.Instance.exitButton.gameObject.SetActive(false);
         GameObject npc = Instantiate(npcPrefab, npcSpawnPoint.position, npcSpawnPoint.rotation);
         DialogueManager.Instance.StartDialogue(dialogNPC);
         yield return new WaitUntil(() => !DialogueManager.Instance.IsInDialogue);

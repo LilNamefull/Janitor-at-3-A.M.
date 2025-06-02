@@ -166,4 +166,4 @@ MonoBehaviour:
   spawnPoint1: {fileID: 8998874227073171586, guid: 01063922367d4094d83f8e5083c462be, type: 3}
   spawnPrefab2: {fileID: 0}
   spawnPoint2: {fileID: 0}
-  interactDistance: 2
+  interactDistance: 4

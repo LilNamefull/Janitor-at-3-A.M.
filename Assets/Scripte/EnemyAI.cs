@@ -10,6 +10,8 @@ public class enemyAI : MonoBehaviour
     [Header("NavMesh Agent")]
     public NavMeshAgent ai;
 
+    public AudioSource backgroundMusic;
+
     [Header("Patrol-Zielpunkte")]
     public List<Transform> destinations;
 
@@ -67,7 +69,7 @@ public class enemyAI : MonoBehaviour
 
         // 2) Anfangsabstand berechnen (Debug)
         aiDistance = Vector3.Distance(player.position, transform.position);
-        Debug.Log($"[enemyAI|OnEnable] Start-Distance to player: {aiDistance:F2} m.");
+        //Debug.Log($"[enemyAI|OnEnable] Start-Distance to player: {aiDistance:F2} m.");
 
         // 3) Erstes Patrol-Ziel wählen
         if (destinations != null && destinations.Count > 0)
@@ -91,7 +93,7 @@ public class enemyAI : MonoBehaviour
         // 1) Aktuellen Abstand zum Spieler berechnen
         aiDistance = Vector3.Distance(player.position, transform.position);
         // Debug-Ausgabe
-        Debug.Log($"[enemyAI|Update] Distance to player: {aiDistance:F2} m (State: {currentState})");
+        //Debug.Log($"[enemyAI|Update] Distance to player: {aiDistance:F2} m (State: {currentState})");
 
         // 2) Wenn im Chase-State, verwende gepufferte Chase-Logik
         if (currentState == State.Chase)
@@ -213,12 +215,15 @@ public class enemyAI : MonoBehaviour
 
     private void StartChase()
     {
+        
         currentState = State.Chase;
         ai.speed = chaseSpeed;
         ai.isStopped = false;          // Agent darf laufen
         aiAnim.SetTrigger("sprint");   // Nur EINMAL beim Zustandswechsel
         aiAnim.ResetTrigger("walk");
         aiAnim.ResetTrigger("idle");
+        if (backgroundMusic != null && backgroundMusic.isPlaying)
+            backgroundMusic.Stop();
 
         // Reset des Lost‐Sight‐Timers
         lostSightTimer = 0f;
@@ -368,12 +373,17 @@ public class enemyAI : MonoBehaviour
     public void CancelChase()
     {
         if (currentState == State.Chase)
-        {
+        { 
+            
+
             currentState = State.Idle;
             ai.isStopped = true;          // Agent anhalten
             aiAnim.ResetTrigger("sprint");
             aiAnim.ResetTrigger("walk");
             aiAnim.SetTrigger("idle");    // Nur EINMAL beim Zustandswechsel
+
+            if (backgroundMusic != null)
+                backgroundMusic.Play();
 
             StartIdleRoutine();
             lostSightTimer = 0f;

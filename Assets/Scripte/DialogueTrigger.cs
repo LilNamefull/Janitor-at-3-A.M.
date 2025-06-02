@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 
 [RequireComponent(typeof(Collider))]
@@ -22,6 +22,8 @@ public class DialogueTrigger : MonoBehaviour
     private Transform player;
     private Camera cam;
     private Collider col;
+
+    // Verhindert, dass der Trigger neu feuert, solange ein Dialog läuft
     private bool triggered = false;
 
     void Start()
@@ -29,47 +31,71 @@ public class DialogueTrigger : MonoBehaviour
         player = GameObject.FindGameObjectWithTag("Player").transform;
         cam = Camera.main;
         col = GetComponent<Collider>();
-        col.isTrigger = false; // wir nutzen Raycast, kein Trigger
+        col.isTrigger = false; // Wir nutzen Raycast, kein Trigger
     }
 
     void Update()
     {
+        // Wenn wir bereits einen Dialog gestartet haben und auf dessen Abschluss warten, tun wir nichts
         if (triggered) return;
 
-        // 1) Distanz pr�fen
+        // 1) Distanz zum Spieler prüfen
         if (Vector3.Distance(transform.position, player.position) > interactDistance)
             return;
 
-        // 2) Blickrichtung pr�fen
+        // 2) Blickrichtung checken: Raycast aus Bildschirmmitte
         Ray ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
         if (Physics.Raycast(ray, out RaycastHit hit, interactDistance))
         {
             if (hit.collider == col && Input.GetKeyDown(KeyCode.E))
             {
-                triggered = true; // Nur einmal
-                // Dialog starten
+                // Dialog starten und uns selbst als „aktiver Trigger“ markieren
+                triggered = true;
+                // 1) Nur JETZT abonnieren, damit nur diese Instanz die Completion/Abort‐Events empfängt
+                DialogueManager.Instance.OnDialogueComplete += HandleDialogueComplete;
+                DialogueManager.Instance.OnDialogueAborted += HandleDialogueAborted;
+
+                // 2) Dialog wirklich starten
                 DialogueManager.Instance.StartDialogue(dialogueLines);
-                // Coroutine starten, die auf Ende wartet und dann spawnt
-                StartCoroutine(SpawnAfterDialogue());
             }
         }
     }
 
-    private IEnumerator SpawnAfterDialogue()
+    private void HandleDialogueComplete()
     {
-        // Warte bis der Dialog wirklich beendet ist
-        yield return new WaitUntil(() => !DialogueManager.Instance.IsInDialogue);
+        // 1) Sofort wieder abmelden, damit wir nicht erneut reagieren
+        DialogueManager.Instance.OnDialogueComplete -= HandleDialogueComplete;
+        DialogueManager.Instance.OnDialogueAborted -= HandleDialogueAborted;
 
-        // 1) Erstes Objekt
+        // 2) Spawne nur die Objekte, die für „Complete“ vorgesehen sind
         if (spawnPrefab1 != null && spawnPoint1 != null)
-        {
             Instantiate(spawnPrefab1, spawnPoint1.position, spawnPoint1.rotation);
-        }
 
-        // 2) Zweites Objekt
         if (spawnPrefab2 != null && spawnPoint2 != null)
-        {
             Instantiate(spawnPrefab2, spawnPoint2.position, spawnPoint2.rotation);
+
+        // 3) Zurücksetzen, um nächsten Dialog erneut möglich zu machen
+        triggered = false;
+    }
+
+    private void HandleDialogueAborted()
+    {
+        // 1) Sofort wieder abmelden, keine Spawns
+        DialogueManager.Instance.OnDialogueComplete -= HandleDialogueComplete;
+        DialogueManager.Instance.OnDialogueAborted -= HandleDialogueAborted;
+
+        // 2) Trigger zurücksetzen, damit der Spieler später erneut E drücken kann
+        triggered = false;
+    }
+
+    void OnDestroy()
+    {
+        // Falls dieses Objekt zerstört wird, sollten wir auf jeden Fall abmelden
+        if (DialogueManager.Instance != null)
+        {
+            DialogueManager.Instance.OnDialogueComplete -= HandleDialogueComplete;
+            DialogueManager.Instance.OnDialogueAborted -= HandleDialogueAborted;
         }
     }
 }
+

@@ -1,30 +1,37 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System;
 
 public class DialogueManager : MonoBehaviour
 {
     public static DialogueManager Instance;
 
     [Header("UI Elements")]
-    public GameObject dialogPanel;  // Dein Panel unten am Bildschirm
-    public TextMeshProUGUI dialogText;         // Der Text im Panel
-    public Button nextButton;
-    public Button exitButton;
+    public GameObject dialogPanel;             // Das Panel am unteren Bildschirmrand
+    public TextMeshProUGUI dialogText;         // Textfeld im Panel
+    public Button nextButton;                  // Weiter‐Button
+    public Button exitButton;                  // Abbrechen‐Button
 
-    // interne Speicher f�r das zu spawnende Objekt
-    private GameObject pendingSpawnPrefab;
-    private Transform pendingSpawnPoint;
+    private string[] lines;                    // Alle Zeilen des aktuellen Dialogs
+    private int currentLine;                   // Index der gerade angezeigten Zeile
+    private bool inDialogue;                   // Steuert, ob wir aktuell in einem Dialog sind
+    private bool aborted;                      // Markiert, ob der Dialog durch „Exit“ abgebrochen wurde
 
-    private string[] lines;
-    private int currentLine;
-    private bool inDialogue;
-    private bool aborted;
+    /// <summary>
+    /// Gibt zurück, ob gerade ein Dialog aktiv ist.
+    /// </summary>
+    public bool IsInDialogue => inDialogue;
 
-    public bool IsInDialogue
-    {
-        get { return inDialogue; }
-    }
+    /// <summary>
+    /// Wird nur dann FEUERN, wenn der Dialog bis zur letzten Zeile durchgeklickt wurde (nicht bei Exit).
+    /// </summary>
+    public event Action OnDialogueComplete;
+
+    /// <summary>
+    /// Wird nur dann FEUERN, wenn der Dialog vorzeitig (z. B. über den Exit‐Button) beendet wurde.
+    /// </summary>
+    public event Action OnDialogueAborted;
 
     void Awake()
     {
@@ -32,22 +39,16 @@ public class DialogueManager : MonoBehaviour
         else Destroy(gameObject);
 
         dialogPanel.SetActive(false);
+
         nextButton.onClick.AddListener(OnNextButton);
         exitButton.onClick.AddListener(OnExitButton);
     }
 
     /// <summary>
-    /// Standard-Start ohne Spawn
+    /// Startet einen Dialog mit den übergebenen Zeilen. 
+    /// Neue Spawns werden nicht mehr hier angesprochen, sondern über OnDialogueComplete.
     /// </summary>
     public void StartDialogue(string[] dialogueLines)
-    {
-        StartDialogue(dialogueLines, null, null);
-    }
-
-    /// <summary>
-    /// Startet Dialog und merkt sich Prefab+Point f�rs Ende
-    /// </summary>
-    public void StartDialogue(string[] dialogueLines, GameObject spawnPrefab, Transform spawnPoint)
     {
         if (inDialogue) return;
 
@@ -55,9 +56,6 @@ public class DialogueManager : MonoBehaviour
         currentLine = 0;
         inDialogue = true;
         aborted = false;
-
-        pendingSpawnPrefab = spawnPrefab;
-        pendingSpawnPoint = spawnPoint;
 
         dialogPanel.SetActive(true);
         ShowLine();
@@ -78,17 +76,28 @@ public class DialogueManager : MonoBehaviour
 
         currentLine++;
         if (currentLine < lines.Length)
+        {
+            // Noch weitere Zeilen vorhanden → nächste anzeigen
             ShowLine();
+        }
         else
+        {
+            // Letzte Zeile war gerade gezeigt → Dialog beenden
             EndDialogue();
+            // FEUERE OnDialogueComplete nur, wenn nicht abgebrochen
+            if (!aborted)
+                OnDialogueComplete?.Invoke();
+        }
     }
 
     private void OnExitButton()
     {
         if (!inDialogue) return;
 
+        // Dialog vorzeitig abbrechen
         aborted = true;
         EndDialogue();
+        OnDialogueAborted?.Invoke();
     }
 
     private void EndDialogue()
@@ -100,14 +109,8 @@ public class DialogueManager : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
-        // Nur wenn nicht abgebrochen und ein Prefab �bergeben wurde
-        if (!aborted && pendingSpawnPrefab != null && pendingSpawnPoint != null)
-        {
-            Instantiate(pendingSpawnPrefab, pendingSpawnPoint.position, pendingSpawnPoint.rotation);
-        }
-
-        // aufr�umen
-        pendingSpawnPrefab = null;
-        pendingSpawnPoint = null;
+        // Aufräumen: Zeilen‐Array löschen, Zeiger zurücksetzen
+        lines = null;
+        currentLine = 0;
     }
 }

@@ -1,36 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &1905601696978056214
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 6802810087353119378}
-  m_Layer: 0
-  m_Name: Billy_spawn
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &6802810087353119378
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1905601696978056214}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.053, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 3293376730043730525}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8000757180400175902
 GameObject:
   m_ObjectHideFlags: 0
@@ -63,8 +32,7 @@ Transform:
   m_LocalPosition: {x: 158.08, y: 0, z: -40.532}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 6802810087353119378}
+  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &8456965592299006120
@@ -179,4 +147,4 @@ MonoBehaviour:
   spawnPoint1: {fileID: 1256851100412047419, guid: 92ec33931e10dd2488af91004358cdb0, type: 3}
   spawnPrefab2: {fileID: 2914971807049359025, guid: a6bfc4792c276e04abf07e3202ea603d, type: 3}
   spawnPoint2: {fileID: 483548891911698482, guid: 1cabf60702e8c7a4aa366ad33753eb8d, type: 3}
-  interactDistance: 2
+  interactDistance: 4
