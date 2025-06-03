@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 4103108865920010023}
   - component: {fileID: 2828589465573489865}
   - component: {fileID: 6302177216361145151}
+  - component: {fileID: 8530687944596946391}
   m_Layer: 0
   m_Name: NPC_Billy
   m_TagString: Untagged
@@ -148,3 +149,16 @@ MonoBehaviour:
   spawnPrefab2: {fileID: 2914971807049359025, guid: a6bfc4792c276e04abf07e3202ea603d, type: 3}
   spawnPoint2: {fileID: 483548891911698482, guid: 1cabf60702e8c7a4aa366ad33753eb8d, type: 3}
   interactDistance: 4
+--- !u!114 &8530687944596946391
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8000757180400175902}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d46a045b089690b4fabc029873c0eefd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  promptMessage: '"Press E to talk"'

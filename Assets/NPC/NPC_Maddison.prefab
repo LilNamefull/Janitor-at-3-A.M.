@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5404717673695554037}
   - component: {fileID: 8757469479397186785}
   - component: {fileID: 7699680318042273627}
+  - component: {fileID: -4336024184924138269}
   m_Layer: 0
   m_Name: NPC_Maddison
   m_TagString: Untagged
@@ -167,3 +168,16 @@ MonoBehaviour:
   spawnPrefab2: {fileID: 0}
   spawnPoint2: {fileID: 0}
   interactDistance: 4
+--- !u!114 &-4336024184924138269
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2914971807049359025}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d46a045b089690b4fabc029873c0eefd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  promptMessage: '"Press E to talk"'
