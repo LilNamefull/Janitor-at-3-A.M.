@@ -53,7 +53,9 @@ public class FinalSequenceController : MonoBehaviour
     [Tooltip("Abstand, ab dem der Spieler mit 'E' interagieren kann.")]
     public float interactDistance = 2f;
 
-    
+    public AudioSource backgroundMusic;
+    public AudioSource comicMusic;
+
 
     // Privates
     private Transform player;
@@ -168,6 +170,12 @@ public class FinalSequenceController : MonoBehaviour
 
         if (comicController != null)
         {
+            if (backgroundMusic != null && backgroundMusic.isPlaying)
+                backgroundMusic.Stop();
+            if (comicMusic != null)
+                comicMusic.Play();
+
+
             comicController.StartComic();
             // Warte, bis der ComicController sein Panel deaktiviert
             while (comicController.gameObject.activeSelf)
@@ -175,6 +183,10 @@ public class FinalSequenceController : MonoBehaviour
         }
 
         // ==== 6) Dialog 3 abspielen ====
+        if (comicMusic != null && comicMusic.isPlaying)
+            comicMusic.Stop();
+        if (backgroundMusic !=null)
+           backgroundMusic.Play();
         DialogueManager.Instance.exitButton.gameObject.SetActive(false);
         abortedThisDialog = false;
         DialogueManager.Instance.OnDialogueComplete += OnDialog3Complete;
