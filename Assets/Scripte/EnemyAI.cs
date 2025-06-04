@@ -367,9 +367,9 @@ public class enemyAI : MonoBehaviour
 
     // ***************** ÖFFENTLICHE METHODE ZUM ABBRECHEN DER JAGD *****************
 
-    /// <summary>
+   
     /// Bricht die aktuelle Jagd (Chase) ab und wechselt in Idle.
-    /// </summary>
+    
     public void CancelChase()
     {
         if (currentState == State.Chase)
