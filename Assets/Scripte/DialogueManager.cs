@@ -18,6 +18,8 @@ public class DialogueManager : MonoBehaviour
     private bool inDialogue;                   // Steuert, ob wir aktuell in einem Dialog sind
     private bool aborted;                      // Markiert, ob der Dialog durch „Exit“ abgebrochen wurde
 
+    public GameObject Interaction;
+
     /// <summary>
     /// Gibt zurück, ob gerade ein Dialog aktiv ist.
     /// </summary>
@@ -43,13 +45,17 @@ public class DialogueManager : MonoBehaviour
         nextButton.onClick.AddListener(OnNextButton);
         exitButton.onClick.AddListener(OnExitButton);
     }
-
+    void Start()
+    {
+        if (Interaction != null) Interaction.gameObject.SetActive(true);
+    }
     /// <summary>
     /// Startet einen Dialog mit den übergebenen Zeilen. 
     /// Neue Spawns werden nicht mehr hier angesprochen, sondern über OnDialogueComplete.
     /// </summary>
     public void StartDialogue(string[] dialogueLines)
     {
+        if (Interaction != null) Interaction.gameObject.SetActive(false);
         if (inDialogue) return;
 
         lines = dialogueLines;
@@ -112,5 +118,7 @@ public class DialogueManager : MonoBehaviour
         // Aufräumen: Zeilen‐Array löschen, Zeiger zurücksetzen
         lines = null;
         currentLine = 0;
+
+        if (Interaction != null) Interaction.gameObject.SetActive(true);
     }
 }

@@ -22,10 +22,13 @@ public class KnockAndDialogController : MonoBehaviour
     public float dialogDelay = 0.5f;     // Warte vor Dialog 1
     public float lookSpeed = 2f;         // Drehtempo
 
-    [Header("Camera Cut-Pivot")]
-    public Transform cameraHolder;       // Leeres GameObject, Parent der MainCamera
-    public float lookAngle = 45f;        // Winkel nach links
-    public float rotateDuration = 0.5f;  // Dauer des Schwenks
+    public GameObject playerMain;
+
+    
+
+    public Camera playerCamera;
+    
+    public Camera cinematicCamera;
 
     [Header("Monster Door")]
     [Tooltip("Zieh hier dein Monster-Tür-GameObject hinein")]
@@ -47,8 +50,14 @@ public class KnockAndDialogController : MonoBehaviour
     {
         player = GameObject.FindGameObjectWithTag("Player")?.transform;
 
+        if (playerMain != null) playerMain.gameObject.SetActive(true);
+
         if (knockAudio == null) Debug.LogError("knockAudio fehlt!");
-        if (cameraHolder == null) Debug.LogError("cameraHolder fehlt!");
+        if (hotbarUI != null) hotbarUI.SetActive(true);
+
+        if (playerCamera != null) playerCamera.gameObject.SetActive(true);
+
+        if (cinematicCamera != null) cinematicCamera.gameObject.SetActive(false);
 
         // Monster-Tür initial deaktivieren
         if (monsterDoor != null)
@@ -137,29 +146,31 @@ public class KnockAndDialogController : MonoBehaviour
         yield return new WaitForSecondsRealtime(dialogDelay);
 
         // b) Dialog 1 starten
+        
         DialogueManager.Instance.exitButton.gameObject.SetActive(false);
         DialogueManager.Instance.StartDialogue(dialogAfterOpen);
         yield return new WaitUntil(() => !DialogueManager.Instance.IsInDialogue);
 
-        // c) Speicher Original-Local-Rotation des CameraHolder
-        Quaternion origLocalRot = cameraHolder.localRotation;
-
-        // d) Ziel-Rotation 45° nach links
-        Quaternion targetLocalRot = origLocalRot * Quaternion.Euler(0f, -lookAngle, 0f);
-
-        // e) Schwenk nach links
-        yield return RotateLocal(cameraHolder, origLocalRot, targetLocalRot, rotateDuration);
+       
+      
 
         // f) NPC spawnen + Dialog 2 starten
         DialogueManager.Instance.exitButton.gameObject.SetActive(false);
         GameObject npc = Instantiate(npcPrefab, npcSpawnPoint.position, npcSpawnPoint.rotation);
+        if (playerCamera != null) playerCamera.gameObject.SetActive(false);
+        if (cinematicCamera != null) cinematicCamera.gameObject.SetActive(true);
+        if (playerMain != null) playerMain.gameObject.SetActive(false);
         DialogueManager.Instance.StartDialogue(dialogNPC);
         yield return new WaitUntil(() => !DialogueManager.Instance.IsInDialogue);
 
-        // g) Rück-Schwenk zum Original
-        yield return RotateLocal(cameraHolder, targetLocalRot, origLocalRot, rotateDuration);
+
 
         // h) Aufräumen
+        if (cinematicCamera != null) cinematicCamera.gameObject.SetActive(false);
+        if (playerCamera != null) playerCamera.gameObject.SetActive(true);
+        if (playerMain != null) playerMain.gameObject.SetActive(true);
+        if (hotbarUI != null) hotbarUI.SetActive(true);
+
         Destroy(npc);
 
         // i) Monster-Tür jetzt aktivieren

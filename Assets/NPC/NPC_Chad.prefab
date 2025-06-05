@@ -30,8 +30,8 @@ Transform:
   m_GameObject: {fileID: 7705949446672827167}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 7.63, y: 0, z: 7.1}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -139.8735, y: 1.797, z: 39.343}
+  m_LocalScale: {x: 0.80555, y: 0.80555, z: 0.80555}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -161,9 +161,9 @@ MonoBehaviour:
     but the damn door was locked. So I headed back into room Algebra 2 to hide out
     in. After that... I dunno - I think that was it, I guess.'
   spawnPrefab1: {fileID: 8064226487575135456, guid: 3f29889a2237d0a44a5e6e10a309f784, type: 3}
-  spawnPoint1: {fileID: 3193237088150666422, guid: 21640efd2fb5bab45a44d53279da2728, type: 3}
-  spawnPrefab2: {fileID: 0}
-  spawnPoint2: {fileID: 0}
+  spawnPoint1: {fileID: 2940976257540777822, guid: 07e923fe2ab3d4641903b8cafeeb59c4, type: 3}
+  spawnPrefab2: {fileID: 8812681518849270898, guid: eee5ba5f3c8b5cd4d979b7ad155aa173, type: 3}
+  spawnPoint2: {fileID: 8515862654527590853, guid: 6493413a19dae4a4eab2822c0b28f237, type: 3}
   interactDistance: 4
 --- !u!114 &5129847128150279654
 MonoBehaviour:

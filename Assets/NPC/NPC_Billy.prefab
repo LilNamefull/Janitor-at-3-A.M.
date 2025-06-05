@@ -145,7 +145,7 @@ MonoBehaviour:
   - 'Billy: Chad? Pfft. If I had to bet, he ran to the gym. That dude practically
     lives there. *hits his vape*'
   spawnPrefab1: {fileID: 7705949446672827167, guid: f019920dacc56974a8603d6d4c894e65, type: 3}
-  spawnPoint1: {fileID: 1256851100412047419, guid: 92ec33931e10dd2488af91004358cdb0, type: 3}
+  spawnPoint1: {fileID: 1706913357268266980, guid: 9b1d0f4e8c4a2d94a8407a80495e9a22, type: 3}
   spawnPrefab2: {fileID: 2914971807049359025, guid: a6bfc4792c276e04abf07e3202ea603d, type: 3}
   spawnPoint2: {fileID: 483548891911698482, guid: 1cabf60702e8c7a4aa366ad33753eb8d, type: 3}
   interactDistance: 4

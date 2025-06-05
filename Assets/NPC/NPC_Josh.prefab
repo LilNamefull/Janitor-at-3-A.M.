@@ -154,6 +154,6 @@ MonoBehaviour:
   - 'J.: Alright, I''ll go look for him.'
   spawnPrefab1: {fileID: 8000757180400175902, guid: f5c3ccc1907cac449b267f53789f984c, type: 3}
   spawnPoint1: {fileID: 3479694835012501104, guid: 00cc3c0206cee8a42b7fc12b02cdd2a3, type: 3}
-  spawnPrefab2: {fileID: 0}
-  spawnPoint2: {fileID: 0}
+  spawnPrefab2: {fileID: 431872472049308539, guid: c2f0d5a380611174388a3b11375b44d3, type: 3}
+  spawnPoint2: {fileID: 3651515341050010482, guid: d8aa9e69aa85143439018a5956c0ce28, type: 3}
   interactDistance: 4

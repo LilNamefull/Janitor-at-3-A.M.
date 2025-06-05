@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &803110206763037974
+--- !u!1 &4752156488711393729
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,25 +8,25 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 3193237088150666422}
+  - component: {fileID: 6321088605125037652}
   m_Layer: 0
-  m_Name: ChadConSpawn
+  m_Name: SpawnLeiche Maddias
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &3193237088150666422
+--- !u!4 &6321088605125037652
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 803110206763037974}
+  m_GameObject: {fileID: 4752156488711393729}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.6842162, y: -0, z: -0, w: -0.7292793}
-  m_LocalPosition: {x: 14.559938, y: 0.088, z: 171.91573}
-  m_LocalScale: {x: 0.1338, y: 0.13380003, z: 0.13380003}
+  m_LocalRotation: {x: -0, y: -0.733992, z: -0, w: -0.67915815}
+  m_LocalPosition: {x: 63.739, y: 0.081, z: 68.46103}
+  m_LocalScale: {x: 0.24463806, y: 0.35409632, z: 0.35409632}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}

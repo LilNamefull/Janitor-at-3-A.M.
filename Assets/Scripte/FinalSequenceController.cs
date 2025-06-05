@@ -16,16 +16,20 @@ public class FinalSequenceController : MonoBehaviour
     [Header("Hotbar")]
     [Tooltip("Das GameObject, das die gesamte Hotbar enthält. Wird während Dialog+Comic deaktiviert.")]
     public GameObject hotbarUI;
+    public GameObject Interaction;
 
     [Header("Nach Dialog 1: NPC spawnen")]
     public GameObject npcAfterDialog1Prefab;
     public Transform npcAfterDialog1SpawnPoint;
 
+    public GameObject Enemy;
+
+
     [Header("Dialog-Sequenzen")]
     public string[] dialogLines1;
     public string[] dialogLines2;
     public string[] dialogLines3;
-
+   
     [Header("Comic-Sequenz (weiß überdeckt)")]
     public ComicController comicController;
 
@@ -76,6 +80,7 @@ public class FinalSequenceController : MonoBehaviour
         // CinematicCamera deaktivieren, PlayerCamera aktivieren
         if (cinematicCamera != null) cinematicCamera.gameObject.SetActive(false);
         if (playerCamera != null) playerCamera.gameObject.SetActive(true);
+        if (Enemy!= null) Enemy.gameObject.SetActive(true);
 
         // Alle Panels deaktivieren
         if (comicController != null) comicController.gameObject.SetActive(false);
@@ -84,6 +89,7 @@ public class FinalSequenceController : MonoBehaviour
 
         // Hotbar am Anfang aktiv
         if (hotbarUI != null) hotbarUI.SetActive(true);
+        if (Interaction != null) Interaction.gameObject.SetActive(true);
     }
 
     void Update()
@@ -111,6 +117,9 @@ public class FinalSequenceController : MonoBehaviour
         // ==== 0) Hotbar deaktivieren ====
         if (hotbarUI != null)
             hotbarUI.SetActive(false);
+
+        if (Enemy != null) Enemy.gameObject.SetActive(false);
+        if (Interaction != null) Interaction.gameObject.SetActive(false);
 
 
         // ==== 1) Dialog 1 abspielen ====
@@ -143,7 +152,7 @@ public class FinalSequenceController : MonoBehaviour
         // ==== 3) CinematicCamera aktivieren, PlayerCamera deaktivieren ====
         if (playerCamera != null) playerCamera.gameObject.SetActive(false);
         if (cinematicCamera != null) cinematicCamera.gameObject.SetActive(true);
-
+        
         // ==== 4) Dialog 2 abspielen (über CinematicCamera) ====
         DialogueManager.Instance.exitButton.gameObject.SetActive(false);
         abortedThisDialog = false;
@@ -212,7 +221,7 @@ public class FinalSequenceController : MonoBehaviour
             Cursor.visible = true;
             finalDecisionPanel.SetActive(true);
             bool decisionMade = false;
-
+            if (Interaction != null) Interaction.gameObject.SetActive(false);
             refuseButton.onClick.AddListener(() =>
             {
                 decisionMade = true;
