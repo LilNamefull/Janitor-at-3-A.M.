@@ -23,7 +23,7 @@ public class FinalSequenceController : MonoBehaviour
     public Transform npcAfterDialog1SpawnPoint;
 
     public GameObject Enemy;
-
+    
 
     [Header("Dialog-Sequenzen")]
     public string[] dialogLines1;

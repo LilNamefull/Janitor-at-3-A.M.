@@ -125,7 +125,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogueLines:
   - "J.: Wait\u2026 weren\u2019t you dead? I saw you in the locker!"
-  - "osh: A-AHHH! Who\u2014who are you?!"
+  - "Josh: A-AHHH! Who\u2014who are you?!"
   - "J.: I\u2019m the new janitor. What are you doing here?"
   - "Josh: I-I\u2019m hiding! From the principal! He\u2014he attacked us\u2026 me
     and my friends\u2026"

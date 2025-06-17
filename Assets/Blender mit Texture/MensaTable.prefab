@@ -22,7 +22,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 454dafbf41798e048913b837ebfbf781, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -17.400002
+      value: -63.8
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 454dafbf41798e048913b837ebfbf781, type: 3}
       propertyPath: m_LocalPosition.y
@@ -30,7 +30,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 454dafbf41798e048913b837ebfbf781, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 172.7
+      value: 161.13
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 454dafbf41798e048913b837ebfbf781, type: 3}
       propertyPath: m_LocalRotation.w
@@ -83,6 +83,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 454dafbf41798e048913b837ebfbf781, type: 3}
       insertIndex: -1
       addedObject: {fileID: 99614549922882516}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 454dafbf41798e048913b837ebfbf781, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6537467403600455965}
     - targetCorrespondingSourceObject: {fileID: -516098083770646512, guid: 454dafbf41798e048913b837ebfbf781, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6340109787689567098}
@@ -113,6 +116,22 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 9.893041, y: 2.7306385, z: 10.980691}
   m_Center: {x: -3.440846, y: 0.86531925, z: -4.4430065}
+--- !u!208 &6537467403600455965
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1742179032279153419}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 5.34, y: 1.755, z: 5.435}
+  m_MoveThreshold: 0.1
+  m_Carve: 0
+  m_CarveOnlyStationary: 1
+  m_Center: {x: -3.6, y: 2, z: -4.12}
+  m_TimeToStationary: 0.5
 --- !u!1 &7798665338404177482 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -516098083770646512, guid: 454dafbf41798e048913b837ebfbf781, type: 3}
