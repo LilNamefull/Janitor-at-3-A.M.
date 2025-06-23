@@ -306,6 +306,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df67ab441d6b83043b1399779cfdd48e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  taskIDsToRemoveOnPickup:
+  - GetTheScroll1
 --- !u!65 &4368351871512825314
 BoxCollider:
   m_ObjectHideFlags: 0

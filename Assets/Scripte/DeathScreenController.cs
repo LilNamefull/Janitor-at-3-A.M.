@@ -99,6 +99,7 @@ public class DeathScreenController : MonoBehaviour
             sceneToLoad = SceneManager.GetActiveScene().name;
         }
         SceneManager.LoadScene(sceneToLoad);
+        GameManager.Instance.ResetKeys();
     }
 
     private void OnMenuPressed()
@@ -115,6 +116,7 @@ public class DeathScreenController : MonoBehaviour
         // Lade Main Menu Szene
         if (!string.IsNullOrEmpty(mainMenuSceneName))
         {
+            GameManager.Instance.ResetKeys();
             SceneManager.LoadScene(mainMenuSceneName);
             // Hier kannst du bei Bedarf noch Reset-Logik hinzufügen, falls du persistente Daten löschen willst.
         }

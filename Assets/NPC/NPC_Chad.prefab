@@ -128,33 +128,33 @@ MonoBehaviour:
   - 'Chad: How the hell did you find me?!
 
 '
-  - "J.: Well you're not exactly hiding well. Also, hate to break it to you, but
-    you\u2019re already dead.\n"
+  - "Janitor.: Well you're not exactly hiding well. Also, hate to break it to you,
+    but you\u2019re already dead.\n"
   - "Chad: Yeah, no shit! Doesn\u2019t change the fact that I can\u2019t leave this
     damn building. And that bastard of a principal is still hunting me down\u2014even
     though I\u2019m dead!\n"
-  - 'J.: Look, we need to get to the point, I talked to Billy. He said you have a
-    piece of that scroll you took from the principal. I need it if I want any chance
-    of getting out of here.
+  - 'Janitor.: Look, we need to get to the point, I talked to Billy. He said you
+    have a piece of that scroll you took from the principal. I need it if I want
+    any chance of getting out of here.
 
 '
   - "Chad.: Oh, you need it? Cool. Just one problem dipshit, I don\u2019t have it.
     Tried grabbing it from my own corpse, and guess what? Burned the hell outta my
     hand. That shit isn't exactly ghost friendly.\n"
-  - 'J.: Fine, then where''s your body?
+  - 'Janitor.: Fine, then where''s your body?
 
 '
   - 'Chad.: And what do I get from telling you that?
 
 '
-  - 'J.: I could try to free your spirit from this school.
+  - 'Janitor.: I could try to free your spirit from this school.
 
 '
   - 'Chad: You better keep your word, janitor, or else... *expands through the locker
     walls*
 
 '
-  - 'J: I will...I will... calm down.
+  - 'Janitor: I will...I will... calm down.
 
 '
   - 'Chad: Aight, big boy. The last thing I remember is sprinting to the main exit
@@ -165,6 +165,14 @@ MonoBehaviour:
   spawnPrefab2: {fileID: 8812681518849270898, guid: eee5ba5f3c8b5cd4d979b7ad155aa173, type: 3}
   spawnPoint2: {fileID: 8515862654527590853, guid: 6493413a19dae4a4eab2822c0b28f237, type: 3}
   interactDistance: 4
+  taskIDsToAdd:
+  - GetTheScroll1
+  taskTitlesToAdd:
+  - Get the half of the contract
+  taskSubtitlesToAdd:
+  - It schould be in Algebra 2
+  taskIDsToRemove:
+  - SpeakChad
 --- !u!114 &5129847128150279654
 MonoBehaviour:
   m_ObjectHideFlags: 0

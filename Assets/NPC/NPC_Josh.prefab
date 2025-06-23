@@ -124,36 +124,42 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueLines:
-  - "J.: Wait\u2026 weren\u2019t you dead? I saw you in the locker!"
+  - "Janitor.: Wait\u2026 weren\u2019t you dead? I saw you in the locker!"
   - "Josh: A-AHHH! Who\u2014who are you?!"
-  - "J.: I\u2019m the new janitor. What are you doing here?"
+  - "Janitor.: I\u2019m the new janitor. What are you doing here?"
   - "Josh: I-I\u2019m hiding! From the principal! He\u2014he attacked us\u2026 me
     and my friends\u2026"
-  - 'J.: The principal?'
+  - 'Janitor.: The principal?'
   - "Josh.: Y-yeah! He turned into some kind of\u2026 thing. A monster. He started
     hunting us down!"
-  - "J.: You mean that thing out there is\u2014?"
+  - "Janitor.: You mean that thing out there is\u2014?"
   - "Josh.: (nodding): Mhm\u2026 We tried to run, b-but we didn\u2019t get far. He
     got us real bad\u2026 My friends\u2026 they should still be somewhere in the
     building."
-  - 'J.: Is there a way out of here?
+  - 'Janitor.: Is there a way out of here?
 
 '
   - "Josh.: I\u2014I don\u2019t know. But if you find one\u2026 please, please take
     us with you.\n"
-  - 'J.: Why was the principal after you?
+  - 'Janitor.: Why was the principal after you?
 
 '
   - "Josh: B-Billy\u2026 He stole some kinda scroll from the principal\u2019s office.
     And then\u2014then he just changed.\n"
-  - 'J.: And where is Billy now?
+  - 'Janitor.: And where is Billy now?
 
 '
   - "Josh: H-he usually hides under the stairs to vape\u2026 M-maybe he\u2019s still
     there.\n"
-  - 'J.: Alright, I''ll go look for him.'
+  - 'Janitor.: Alright, I''ll go look for him.'
   spawnPrefab1: {fileID: 8000757180400175902, guid: f5c3ccc1907cac449b267f53789f984c, type: 3}
   spawnPoint1: {fileID: 3479694835012501104, guid: 00cc3c0206cee8a42b7fc12b02cdd2a3, type: 3}
   spawnPrefab2: {fileID: 431872472049308539, guid: c2f0d5a380611174388a3b11375b44d3, type: 3}
   spawnPoint2: {fileID: 3651515341050010482, guid: d8aa9e69aa85143439018a5956c0ce28, type: 3}
   interactDistance: 4
+  addTaskOnComplete: 1
+  taskIDToAdd: SpeakBilly
+  taskTitleToAdd: 'Task: Speak with Billy'
+  taskSubtitleToAdd: He hides under the stairs
+  removeTaskOnComplete: 1
+  taskIDToRemove: SpeakBilly

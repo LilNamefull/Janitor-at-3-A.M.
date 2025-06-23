@@ -23,11 +23,7 @@ public class KnockAndDialogController : MonoBehaviour
     public float lookSpeed = 2f;         // Drehtempo
 
     public GameObject playerMain;
-
-    
-
     public Camera playerCamera;
-    
     public Camera cinematicCamera;
 
     [Header("Monster Door")]
@@ -40,11 +36,23 @@ public class KnockAndDialogController : MonoBehaviour
     public GameObject Invinsiblewallbefor2;
     public GameObject Invinsiblewallmidlele2;
     public GameObject Invinsiblewallafter2;
+
+    [Header("UI")]
+    public GameObject hotbarUI;
+
+    [Header("Auto-Dialog nach Klopfen")]
+    [Tooltip("Sekunden nach Start des Klopfens, bis automatisch der Auto-Dialog mit diesen Zeilen startet")]
+    public float autoDialogDelay = 5f;
+
+    [Tooltip("Dialogzeilen, die nach autoDialogDelay angezeigt werden (z.B. 2 Zeilen)")]
+    public string[] autoDialogLines;
+
+    private Coroutine autoDialogCoroutine = null;
+    private bool autoDialogShown = false; // Flag, damit es nur einmal passiert
+
     private Transform player;
     private bool isKnocking = false;
     private bool cutsceneStarted = false;
-
-    public GameObject hotbarUI;
 
     void Start()
     {
@@ -56,7 +64,6 @@ public class KnockAndDialogController : MonoBehaviour
         if (hotbarUI != null) hotbarUI.SetActive(true);
 
         if (playerCamera != null) playerCamera.gameObject.SetActive(true);
-
         if (cinematicCamera != null) cinematicCamera.gameObject.SetActive(false);
 
         // Monster-Tür initial deaktivieren
@@ -67,7 +74,7 @@ public class KnockAndDialogController : MonoBehaviour
         if (Invinsiblewallmidlele != null)
             Invinsiblewallmidlele.SetActive(false);
         if (Invinsiblewallafter != null)
-            Invinsiblewallafter.SetActive(false );
+            Invinsiblewallafter.SetActive(false);
         if (Invinsiblewallmidlele2 != null)
             Invinsiblewallmidlele2.SetActive(false);
         if (Invinsiblewallafter2 != null)
@@ -83,17 +90,28 @@ public class KnockAndDialogController : MonoBehaviour
 
     void Update()
     {
-
+        if (player == null) return;
 
         // 1) Starte Klopfen, sobald alle Aufgaben erledigt sind
         if (!isKnocking && GameManagerIntro.Instance.allTasksDone)
         {
             if (backgroundMusic != null && backgroundMusic.isPlaying)
                 backgroundMusic.Stop();
+
             knockAudio.Play();
             isKnocking = true;
+            cutsceneStarted = false;
+            autoDialogShown = false;
+            if (autoDialogCoroutine != null)
+            {
+                StopCoroutine(autoDialogCoroutine);
+                autoDialogCoroutine = null;
+            }
+            autoDialogCoroutine = StartCoroutine(AutoTriggerDialogAfterDelay());
+
+            // Wände umschalten wie bisher
             if (Invinsiblewallbefor != null)
-                Invinsiblewallbefor.SetActive(false); 
+                Invinsiblewallbefor.SetActive(false);
             if (Invinsiblewallmidlele != null)
                 Invinsiblewallmidlele.SetActive(true);
             if (Invinsiblewallbefor2 != null)
@@ -115,6 +133,14 @@ public class KnockAndDialogController : MonoBehaviour
             if (dist <= interactDistance && !cutsceneStarted && Input.GetKeyDown(KeyCode.E))
             {
                 cutsceneStarted = true;
+
+                // Stoppe automatischen Dialog, falls noch aktiv
+                if (autoDialogCoroutine != null)
+                {
+                    StopCoroutine(autoDialogCoroutine);
+                    autoDialogCoroutine = null;
+                }
+
                 knockAudio.Stop();
 
                 // 1) Collider ausschalten
@@ -140,32 +166,71 @@ public class KnockAndDialogController : MonoBehaviour
         }
     }
 
+    // === NEU: Coroutine für automatischen Trigger des Dialogs nach Delay ===
+    private IEnumerator AutoTriggerDialogAfterDelay()
+    {
+        yield return new WaitForSecondsRealtime(autoDialogDelay);
+        autoDialogCoroutine = null;
+
+        if (isKnocking && !cutsceneStarted && !autoDialogShown)
+        {
+            autoDialogShown = true;
+            // Pausiere Klopf-Audio während Auto-Dialog
+            knockAudio.Pause();
+
+            // Freeze Game und Cursor freigeben
+            Time.timeScale = 0f;
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+
+            // Starte Auto-Dialog
+            if (autoDialogLines != null && autoDialogLines.Length > 0)
+            {
+                if (hotbarUI != null)
+                    hotbarUI.SetActive(false);
+                DialogueManager.Instance.exitButton.gameObject.SetActive(false);
+                DialogueManager.Instance.StartDialogue(autoDialogLines);
+                yield return new WaitUntil(() => !DialogueManager.Instance.IsInDialogue);
+            }
+            else
+            {
+                Debug.LogWarning("[KnockAndDialogController] autoDialogLines nicht gesetzt oder leer.");
+            }
+
+            // Nach Auto-Dialog: unfreeze, Cursor sperren, Klopf-Audio fortsetzen
+            Time.timeScale = 1f;
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+            if (knockAudio != null)
+                knockAudio.UnPause();
+            if (hotbarUI != null)
+                hotbarUI.SetActive(true);
+        }
+    }
+
     private IEnumerator DialogSequence()
     {
         // a) Warte vor erstem Dialog
         yield return new WaitForSecondsRealtime(dialogDelay);
 
         // b) Dialog 1 starten
-        
         DialogueManager.Instance.exitButton.gameObject.SetActive(false);
         DialogueManager.Instance.StartDialogue(dialogAfterOpen);
         yield return new WaitUntil(() => !DialogueManager.Instance.IsInDialogue);
 
-       
-      
-
-        // f) NPC spawnen + Dialog 2 starten
+        // c) NPC-Dialog
         DialogueManager.Instance.exitButton.gameObject.SetActive(false);
         GameObject npc = Instantiate(npcPrefab, npcSpawnPoint.position, npcSpawnPoint.rotation);
+
+        // Kamera umschalten
         if (playerCamera != null) playerCamera.gameObject.SetActive(false);
         if (cinematicCamera != null) cinematicCamera.gameObject.SetActive(true);
         if (playerMain != null) playerMain.gameObject.SetActive(false);
+
         DialogueManager.Instance.StartDialogue(dialogNPC);
         yield return new WaitUntil(() => !DialogueManager.Instance.IsInDialogue);
 
-
-
-        // h) Aufräumen
+        // d) Aufräumen und zurückschalten
         if (cinematicCamera != null) cinematicCamera.gameObject.SetActive(false);
         if (playerCamera != null) playerCamera.gameObject.SetActive(true);
         if (playerMain != null) playerMain.gameObject.SetActive(true);
@@ -173,10 +238,10 @@ public class KnockAndDialogController : MonoBehaviour
 
         Destroy(npc);
 
-        // i) Monster-Tür jetzt aktivieren
+        // e) Monster-Tür aktivieren / Wände umschalten wie bisher
         if (monsterDoor != null)
             monsterDoor.SetActive(true);
-        if (MonsterDoorFrameWithoutcode !=null)
+        if (MonsterDoorFrameWithoutcode != null)
             MonsterDoorFrameWithoutcode.SetActive(false);
         if (Invinsiblewallmidlele != null)
             Invinsiblewallmidlele.SetActive(false);
@@ -187,7 +252,7 @@ public class KnockAndDialogController : MonoBehaviour
         if (Invinsiblewallafter2 != null)
             Invinsiblewallafter2.SetActive(true);
 
-        // j) Diese Szene nicht länger als Interactable behalten
+        // f) Diese Szene nicht länger als Interactable behalten
         gameObject.layer = LayerMask.NameToLayer("Default");
     }
 

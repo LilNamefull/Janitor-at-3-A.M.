@@ -4,12 +4,14 @@ public class MapController : MonoBehaviour
 {
     [Tooltip("Referenz auf das UI-Panel, das die gesamte Karte enthält.")]
     public GameObject mapPanel;
+    public GameObject hotbarUI;
 
     void Start()
     {
         // Stelle sicher, dass zu Spielstart die Map ausgeblendet ist
         if (mapPanel != null)
             mapPanel.SetActive(false);
+        if (hotbarUI != null) hotbarUI.SetActive(true);
     }
 
     void Update()
@@ -20,6 +22,8 @@ public class MapController : MonoBehaviour
         // Wenn die Taste T gehalten wird, Karte anzeigen; sonst verstecken
         if (Input.GetKey(KeyCode.T))
         {
+            if (hotbarUI != null)
+                hotbarUI.SetActive(false);
             if (!mapPanel.activeSelf)
                 mapPanel.SetActive(true);
         }
@@ -27,6 +31,7 @@ public class MapController : MonoBehaviour
         {
             if (mapPanel.activeSelf)
                 mapPanel.SetActive(false);
+            if (hotbarUI != null) hotbarUI.SetActive(true);
         }
     }
 }

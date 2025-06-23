@@ -125,30 +125,41 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueLines:
-  - 'J.: Billy?'
+  - 'Janitor.: Billy?'
   - "Billy.: *exhaling smoke* : Who the hell are you? How do you know my name? Did
     the principal send you? And\u2014wait\u2026 how can you even see me?\n"
-  - "J.: I talked to Josh. He figured you\u2019d probably be hiding here. I\u2019m
+  - "Janitor.: I talked to Josh. He figured you\u2019d probably be hiding here. I\u2019m
     trying to escape this place.\n"
   - "Billy: Josh? You mean Chad\u2019s little brown-nosing sidekick? Damn. So he\u2019s
     still alive?  *takes a long hit from his vape*\n"
-  - "J.: Not exactly. He\u2019s\u2026 dead. He just doesn\u2019t know it yet. He
-    said you stole a scroll from the principal.\n"
+  - "Janitor.: Not exactly. He\u2019s\u2026 dead. He just doesn\u2019t know it yet.
+    He said you stole a scroll from the principal.\n"
   - "Billy.: Oh, that thing? Yeah\u2026 well, it ripped in half during the chase.
     My friends\u2014Chad and Maddison\u2014each grabbed a piece.\n"
-  - "J.: You wouldn\u2019t happen to know where they ran off to, would you?\n"
+  - "Janitor.: You wouldn\u2019t happen to know where they ran off to, would you?\n"
   - "Billy: If I had to guess, she's in the girl's bathroom. That's where she always
     is during class. And if she\u2019s smart, she\u2019s holed up in there.\n"
-  - 'J.: And Chad?
+  - 'Janitor.: And Chad?
 
 '
-  - 'Billy: Chad? Pfft. If I had to bet, he ran to the gym. That dude practically
+  - 'Billy: Chad? Pfft. If I had to bet, he ran to the gym area. That dude practically
     lives there. *hits his vape*'
   spawnPrefab1: {fileID: 7705949446672827167, guid: f019920dacc56974a8603d6d4c894e65, type: 3}
   spawnPoint1: {fileID: 1706913357268266980, guid: 9b1d0f4e8c4a2d94a8407a80495e9a22, type: 3}
   spawnPrefab2: {fileID: 2914971807049359025, guid: a6bfc4792c276e04abf07e3202ea603d, type: 3}
   spawnPoint2: {fileID: 483548891911698482, guid: 1cabf60702e8c7a4aa366ad33753eb8d, type: 3}
   interactDistance: 4
+  taskIDsToAdd:
+  - SpeakChad
+  - SpeakMaddison
+  taskTitlesToAdd:
+  - Speak with Chad
+  - Speak with Maddison
+  taskSubtitlesToAdd:
+  - He hides in the gym area
+  - She hides in the bathrom
+  taskIDsToRemove:
+  - SpeakBilly
 --- !u!114 &8530687944596946391
 MonoBehaviour:
   m_ObjectHideFlags: 0

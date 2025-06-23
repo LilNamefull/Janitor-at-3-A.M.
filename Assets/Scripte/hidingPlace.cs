@@ -47,6 +47,8 @@ public class hidingPlace : MonoBehaviour
     [Tooltip("Leeres GameObject, das die sichere Ausstiegsposition des Spielers markiert")]
     public Transform exitPoint;
 
+   
+
     bool interactable = false;
     bool hiding = false;
 
