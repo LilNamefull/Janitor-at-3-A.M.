@@ -60,7 +60,7 @@ public class GameManager : MonoBehaviour
     {
         if (keyCounterText != null)
         {
-            keyCounterText.text = $"{keysCollected}/{totalKeysRequired} Keys";
+            keyCounterText.text = $"{keysCollected}/{totalKeysRequired} half of the scrolls";
         }
     }
 

@@ -24296,7 +24296,7 @@ MonoBehaviour:
   - {fileID: 1253352460}
   aiAnim: {fileID: 2140515885}
   walkSpeed: 3
-  chaseSpeed: 6.5
+  chaseSpeed: 6.75
   minIdleTime: 0
   maxIdleTime: 0
   player: {fileID: 1299787857}
@@ -24311,6 +24311,8 @@ MonoBehaviour:
   deathScene: ChaseScene
   deathDelay: 2
   hotbarUI: {fileID: 0}
+  stuckCheckInterval: 1
+  stuckThreshold: 0.1
 --- !u!4 &2140515888
 Transform:
   m_ObjectHideFlags: 0
