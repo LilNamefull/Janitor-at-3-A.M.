@@ -54,13 +54,13 @@ public class GameManager : MonoBehaviour
             keyInHotbarGiven = true;
         }
 
-        /*UpdateKeyCounterUI();
+        
 
         // Tür entsperren wenn genug Schlüssel
         if (keysCollected >= totalKeysRequired && lockedDoor != null)
         {
             UnlockDoor();
-        }*/
+        }
     }
 
     /*void UpdateKeyCounterUI()
@@ -105,7 +105,7 @@ public class GameManager : MonoBehaviour
         if (keyCounterText != null)
         {
             keyCounterText.gameObject.SetActive(false);
-            keyCounterText.text = $"0/{totalKeysRequired} keys collected";
+            keyCounterText.text = $"0/{totalKeysRequired}halfs collectet";
         }
 
         // Tür wieder verriegeln, falls Referenz gesetzt

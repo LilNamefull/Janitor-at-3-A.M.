@@ -126,7 +126,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueLines:
-  - "Maddison.:*crying* What the hell old man?! Ever heard of a girls\u2019 bathroom?!
+  - "Maddison...:*crying* What the hell old man?! Ever heard of a girls\u2019 bathroom?!
     This is definitely not where you belong.\n"
   - 'Janitor.: Are you Maddison?
 
@@ -144,7 +144,7 @@ MonoBehaviour:
     where the scroll is.
 
 '
-  - 'Maddison.: *sniffs* ...Really?
+  - 'Maddison...: *sniffs* ...Really?
 
 '
   - 'Janitor.: Yes.
@@ -153,7 +153,7 @@ MonoBehaviour:
   - 'Maddison.: Fiiiine *rolls her eyes* I read a bit of the scroll. Its some kind
     of contract with the devil. There is a passage inside about revoking the whole
     thing and putting an end to this freak show. '
-  - 'Maddison.: Look, I''ll show you where my half is, only if you promise to revoke
+  - 'Maddison..: Look, I''ll show you where my half is, only if you promise to revoke
     the contract and stop the principal. And if you''re lying to me, I''ll personally
     make sure to haunt your sorry ass forever.
 
@@ -161,9 +161,9 @@ MonoBehaviour:
   - 'Janitor.: I promise, don''t worry.
 
 '
-  - 'Maddison.: Okay so, uuuuuhmm. As you see these shoes are cunty as fuck but I
-    can''t really run in them, so my first instinct was to hide in the closest room
-    which is the gross old bio lab. '
+  - 'Maddison..: Okay so, uuuuuhmm. As you see these shoes are cunty as fuck but
+    I can''t really run in them, so my first instinct was to hide in the closest
+    room which is the gross old bio lab. '
   - 'Maddison.: I hate the stank in there but it was either that or dumping my shoes
     - which is a big no-no obviiiiii...'
   spawnPrefab1: {fileID: 1972832224978904816, guid: c78802bf6d95a3344a89fef4aa5a75c8, type: 3}

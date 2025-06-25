@@ -23,22 +23,23 @@ public class CleanableSpot : MonoBehaviour
 
     void Update()
     {
-        // Nur weiter zählen, wenn wir gerade reinigen
         if (isCleaning)
         {
             cleanTimer += Time.deltaTime;
-            // Interpoliere die Skalierung
             float t = Mathf.Clamp01(cleanTimer / cleanDuration);
             transform.localScale = Vector3.Lerp(initialScale, minScale, t);
 
             if (cleanTimer >= cleanDuration)
             {
                 Destroy(gameObject);
-                GameManagerIntro.Instance.SpotCleaned();
+                if (Level1Manager.Instance != null)
+                    Level1Manager.Instance.OnSpotCleaned();
+                else
+                    Debug.LogError("[CleanableSpot] Level1Manager.Instance ist null!");
             }
         }
+    
 
-        // Starte/stoppe reinigen per Maustaste + Mop ausgewählt + auf Spot zielen
         if (Input.GetMouseButton(0) && hotbar != null && hotbar.IsMopEquipped())
         {
             Ray ray = cam.ScreenPointToRay(Input.mousePosition);
@@ -57,3 +58,4 @@ public class CleanableSpot : MonoBehaviour
         }
     }
 }
+

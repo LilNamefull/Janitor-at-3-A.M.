@@ -1,3 +1,4 @@
+// Datei: Assets/Scripte/ChairAutoPlace.cs
 using UnityEngine;
 using System.Collections;
 
@@ -16,12 +17,15 @@ public class ChairAutoPlace : MonoBehaviour
         if (isPlaced) return;
 
         // Ray aus der Mitte der Kamera
-        Ray ray = Camera.main.ViewportPointToRay(Vector3.one * 0.5f);
+        Camera cam = Camera.main;
+        if (cam == null) return;
+
+        Ray ray = cam.ViewportPointToRay(Vector3.one * 0.5f);
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
-            // Wenn wir gerade auf diesen Stuhl schauen und E drücken
             if (hit.collider.gameObject == gameObject && Input.GetKeyDown(interactKey))
             {
+                Debug.Log("[ChairAutoPlace] E gedrückt auf Stuhl, starte Platzierung");
                 StartCoroutine(PlaceRoutine());
             }
         }
@@ -29,13 +33,10 @@ public class ChairAutoPlace : MonoBehaviour
 
     private IEnumerator PlaceRoutine()
     {
-        // Sperre weitere Interaktion
         isPlaced = true;
-        // Deaktiviere Collider während Bewegung
         Collider col = GetComponent<Collider>();
         if (col) col.enabled = false;
 
-        // Starte- und Zielwerte
         Vector3 startPos = transform.position;
         Quaternion startRot = transform.rotation;
         Vector3 endPos = targetSpot.position;
@@ -49,14 +50,17 @@ public class ChairAutoPlace : MonoBehaviour
             transform.rotation = Quaternion.Slerp(startRot, endRot, t);
             yield return null;
         }
-
-        // Exakt ausrichten
         transform.position = endPos;
         transform.rotation = endRot;
 
-        if (GameManagerIntro.Instance != null)
-            GameManagerIntro.Instance.ChairPlaced();
+        // Rufe Level1Manager auf
+        if (Level1Manager.Instance != null)
+        {
+            Level1Manager.Instance.OnChairPlaced();
+        }
         else
-            Debug.LogError("GameManagerIntro.Instance ist null!");
+        {
+            Debug.LogError("[ChairAutoPlace] Level1Manager.Instance ist null!");
+        }
     }
 }

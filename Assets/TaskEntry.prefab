@@ -147,6 +147,7 @@ GameObject:
   - component: {fileID: 6325217103229286891}
   - component: {fileID: 3396454032934941966}
   - component: {fileID: 5463212110213839176}
+  - component: {fileID: -3898175952627008164}
   m_Layer: 0
   m_Name: TaskEntry
   m_TagString: Untagged
@@ -221,6 +222,20 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &-3898175952627008164
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7139675690968986419}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4d9988d33af68d4cb9e68cfce387fa1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  titleText: {fileID: 7678696846380314704}
+  subtitleText: {fileID: 8116267214988893519}
 --- !u!1 &8376909961858122561
 GameObject:
   m_ObjectHideFlags: 0
@@ -295,8 +310,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4291151306
-  m_fontColor: {r: 0.7924528, g: 0.7737629, b: 0.7737629, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:

@@ -119,6 +119,7 @@ public class PauseMenuController : MonoBehaviour
         // Cursor ggf. sperren
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         GameManager.Instance.ResetKeys();
     }

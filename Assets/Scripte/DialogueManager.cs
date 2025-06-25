@@ -2,60 +2,62 @@
 using UnityEngine.UI;
 using TMPro;
 using System;
+using System.Collections.Generic;
 
 public class DialogueManager : MonoBehaviour
 {
     public static DialogueManager Instance;
 
     [Header("UI Elements")]
-    public GameObject dialogPanel;             // Das Panel am unteren Bildschirmrand
-    public TextMeshProUGUI dialogText;         // Textfeld im Panel
-    public Button nextButton;                  // Weiter‐Button
-    public Button exitButton;                  // Abbrechen‐Button
+    public GameObject dialogPanel;       // Panel unten am Bildschirmrand
+    public TextMeshProUGUI dialogText;   // Der eigentliche Dialog-Text
+    public Button nextButton;
+    public Button exitButton;
 
-    private string[] lines;                    // Alle Zeilen des aktuellen Dialogs
-    private int currentLine;                   // Index der gerade angezeigten Zeile
-    private bool inDialogue;                   // Steuert, ob wir aktuell in einem Dialog sind
-    private bool aborted;                      // Markiert, ob der Dialog durch „Exit“ abgebrochen wurde
+    [Header("Portrait")]
+    public Image portraitImage;          // Image-UI-Element für das Portrait
+    public Sprite defaultPortrait;       // Default, wenn kein Mapping gefunden
+    public TextMeshProUGUI speakerNameText; // Optional: Anzeige des Sprecher-Namens
 
-    public GameObject Interaction;
+    [Header("Speaker Portraits")]
+    [Tooltip("Zuordnung von Sprecher-Name zu Sprite.\nSprecher-Name entspricht dem ersten Wort in der Dialogzeile (vor ':').")]
+    public List<SpeakerPortrait> speakerPortraits = new List<SpeakerPortrait>();
 
-    /// <summary>
-    /// Gibt zurück, ob gerade ein Dialog aktiv ist.
-    /// </summary>
+    // interne Felder
+    private string[] lines;
+    private int currentLine;
+    private bool inDialogue;
+    private bool aborted;
+
     public bool IsInDialogue => inDialogue;
 
-    /// <summary>
-    /// Wird nur dann FEUERN, wenn der Dialog bis zur letzten Zeile durchgeklickt wurde (nicht bei Exit).
-    /// </summary>
+    // Events
     public event Action OnDialogueComplete;
-
-    /// <summary>
-    /// Wird nur dann FEUERN, wenn der Dialog vorzeitig (z. B. über den Exit‐Button) beendet wurde.
-    /// </summary>
     public event Action OnDialogueAborted;
+
+    [Serializable]
+    public class SpeakerPortrait
+    {
+        public string speakerName; // z.B. "Maddison" (Case-sensitive oder -insensitive je nach Wunsch)
+        public Sprite portrait;    // zugehöriges Sprite
+    }
 
     void Awake()
     {
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
 
+        // Stelle sicher, UI-Elemente deaktivieren
         dialogPanel.SetActive(false);
-
         nextButton.onClick.AddListener(OnNextButton);
         exitButton.onClick.AddListener(OnExitButton);
     }
-    void Start()
-    {
-        if (Interaction != null) Interaction.gameObject.SetActive(true);
-    }
+
     /// <summary>
-    /// Startet einen Dialog mit den übergebenen Zeilen. 
-    /// Neue Spawns werden nicht mehr hier angesprochen, sondern über OnDialogueComplete.
+    /// Startet einen Dialog mit übergebenem String-Array.
     /// </summary>
     public void StartDialogue(string[] dialogueLines)
     {
-        if (Interaction != null) Interaction.gameObject.SetActive(false);
         if (inDialogue) return;
 
         lines = dialogueLines;
@@ -73,7 +75,75 @@ public class DialogueManager : MonoBehaviour
 
     private void ShowLine()
     {
-        dialogText.text = lines[currentLine];
+        if (currentLine < 0 || currentLine >= lines.Length) return;
+
+        string rawLine = lines[currentLine];
+        string speaker = null;
+        string content = rawLine;
+
+        // Versuch, Speaker und Inhalt zu trennen:
+        // Falls Format "Name: Text..."
+        int colonIndex = rawLine.IndexOf(':');
+        if (colonIndex > 0)
+        {
+            speaker = rawLine.Substring(0, colonIndex).Trim();
+            content = rawLine.Substring(colonIndex + 1).Trim();
+        }
+        else
+        {
+            // Kein ':' gefunden → nimm erstes Wort als Speaker, Rest als Content
+            int spaceIndex = rawLine.IndexOf(' ');
+            if (spaceIndex > 0)
+            {
+                speaker = rawLine.Substring(0, spaceIndex).Trim();
+                content = rawLine.Substring(spaceIndex + 1).Trim();
+            }
+            else
+            {
+                // Ganze Zeile ist nur ein Wort → als Content anzeigen, Speaker unbekannt
+                content = rawLine;
+                speaker = null;
+            }
+        }
+
+        // Setze Dialog-Text
+        dialogText.text = content;
+
+        // Setze Portrait
+        if (portraitImage != null)
+        {
+            Sprite spriteToShow = defaultPortrait;
+            if (!string.IsNullOrEmpty(speaker))
+            {
+                // Suche in der Liste nach Matching speakerName (case-insensitive)
+                foreach (var sp in speakerPortraits)
+                {
+                    if (string.Equals(sp.speakerName, speaker, StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (sp.portrait != null)
+                            spriteToShow = sp.portrait;
+                        break;
+                    }
+                }
+            }
+            // Setze Sprite und Aktivierung
+            portraitImage.sprite = spriteToShow;
+            portraitImage.gameObject.SetActive(spriteToShow != null);
+        }
+
+        // Setze Speaker-Name-Text, falls vorhanden
+        if (speakerNameText != null)
+        {
+            if (!string.IsNullOrEmpty(speaker))
+            {
+                speakerNameText.gameObject.SetActive(true);
+                speakerNameText.text = speaker;
+            }
+            else
+            {
+                speakerNameText.gameObject.SetActive(false);
+            }
+        }
     }
 
     private void OnNextButton()
@@ -83,14 +153,12 @@ public class DialogueManager : MonoBehaviour
         currentLine++;
         if (currentLine < lines.Length)
         {
-            // Noch weitere Zeilen vorhanden → nächste anzeigen
             ShowLine();
         }
         else
         {
-            // Letzte Zeile war gerade gezeigt → Dialog beenden
+            // Ende
             EndDialogue();
-            // FEUERE OnDialogueComplete nur, wenn nicht abgebrochen
             if (!aborted)
                 OnDialogueComplete?.Invoke();
         }
@@ -100,7 +168,6 @@ public class DialogueManager : MonoBehaviour
     {
         if (!inDialogue) return;
 
-        // Dialog vorzeitig abbrechen
         aborted = true;
         EndDialogue();
         OnDialogueAborted?.Invoke();
@@ -115,10 +182,7 @@ public class DialogueManager : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
-        // Aufräumen: Zeilen‐Array löschen, Zeiger zurücksetzen
         lines = null;
         currentLine = 0;
-
-        if (Interaction != null) Interaction.gameObject.SetActive(true);
     }
 }

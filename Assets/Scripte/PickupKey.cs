@@ -54,15 +54,15 @@ public class PickupKey : MonoBehaviour
         if (keys < total)
         {
             // Beispiel: Zeige Task „Collect keys X/Y“
-            string id = "CollectKeys";
-            string title = $"Task: Collect keys {keys}/{total}";
-            string subtitle = "Find the next key";
+            string id = "Find the halfs of the Contract";
+            string title = $"Task: Collect halfs {keys}/{total}";
+            string subtitle = "Find the next half";
             TaskUIManager.Instance.UpdateTask(id, title, subtitle);
         }
         else
         {
             // Alle Keys gesammelt: entferne CollectKeys-Task, zeige UnlockDoor-Task
-            TaskUIManager.Instance.RemoveTask("CollectKeys");
+            TaskUIManager.Instance.RemoveTask("Find the halfs of the Contract");
             string id2 = "UnlockDoor";
             string title2 = "Task: Unlock the door";
             string subtitle2 = "Use the keys at the locked door";

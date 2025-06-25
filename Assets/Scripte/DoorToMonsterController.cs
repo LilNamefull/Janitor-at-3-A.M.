@@ -102,7 +102,8 @@ public class DoorToMonsterController : MonoBehaviour
         yield return new WaitUntil(() => !DialogueManager.Instance.IsInDialogue);
 
         // 6) Szene wechseln
-        SceneManager.LoadScene(chaseSceneName);
+        UnityEngine.SceneManagement.SceneManager.LoadScene("ChaseScene");
+        yield break;
     }
 
     private IEnumerator RotateLocal(Transform t, Quaternion from, Quaternion to, float duration)

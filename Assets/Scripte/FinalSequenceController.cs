@@ -17,6 +17,7 @@ public class FinalSequenceController : MonoBehaviour
     [Tooltip("Das GameObject, das die gesamte Hotbar enthält. Wird während Dialog+Comic deaktiviert.")]
     public GameObject hotbarUI;
     public GameObject Interaction;
+    public GameObject tasks;
 
     [Header("Nach Dialog 1: NPC spawnen")]
     public GameObject npcAfterDialog1Prefab;
@@ -90,6 +91,9 @@ public class FinalSequenceController : MonoBehaviour
         // Hotbar am Anfang aktiv
         if (hotbarUI != null) hotbarUI.SetActive(true);
         if (Interaction != null) Interaction.gameObject.SetActive(true);
+
+        if (tasks != null) tasks.SetActive(true);
+        if (Interaction != null) Interaction.gameObject.SetActive(true);
     }
 
     void Update()
@@ -118,6 +122,9 @@ public class FinalSequenceController : MonoBehaviour
         if (hotbarUI != null)
             hotbarUI.SetActive(false);
 
+        if (tasks != null) tasks.SetActive(false);
+        if (Interaction != null) Interaction.gameObject.SetActive(false);
+
         if (Enemy != null) Enemy.gameObject.SetActive(false);
         if (Interaction != null) Interaction.gameObject.SetActive(false);
 
@@ -137,6 +144,7 @@ public class FinalSequenceController : MonoBehaviour
         {
             // Bei Abbruch: Hotbar wieder aktivieren und Sequenz beenden
             if (hotbarUI != null) hotbarUI.SetActive(true);
+           
             yield break;
         }
 
@@ -169,6 +177,7 @@ public class FinalSequenceController : MonoBehaviour
             if (cinematicCamera != null) cinematicCamera.gameObject.SetActive(false);
             if (playerCamera != null) playerCamera.gameObject.SetActive(true);
             if (hotbarUI != null) hotbarUI.SetActive(true);
+            
             yield break;
         }
 
@@ -211,6 +220,7 @@ public class FinalSequenceController : MonoBehaviour
             if (cinematicCamera != null) cinematicCamera.gameObject.SetActive(false);
             if (playerCamera != null) playerCamera.gameObject.SetActive(true);
             if (hotbarUI != null) hotbarUI.SetActive(true);
+            
             yield break;
         }
 

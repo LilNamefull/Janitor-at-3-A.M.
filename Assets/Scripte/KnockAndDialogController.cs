@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿// Assets/Scripts/KnockAndDialogController.cs
+using UnityEngine;
 using System.Collections;
 
 public class KnockAndDialogController : MonoBehaviour
@@ -20,14 +21,13 @@ public class KnockAndDialogController : MonoBehaviour
 
     [Header("Timings")]
     public float dialogDelay = 0.5f;     // Warte vor Dialog 1
-    public float lookSpeed = 2f;         // Drehtempo
 
-    public GameObject playerMain;
+    [Header("Player & Cameras")]
+    public GameObject playerMain;        // z.B. Player-Root zum Deaktivieren
     public Camera playerCamera;
     public Camera cinematicCamera;
 
     [Header("Monster Door")]
-    [Tooltip("Zieh hier dein Monster-Tür-GameObject hinein")]
     public GameObject monsterDoor;
     public GameObject MonsterDoorFrameWithoutcode;
     public GameObject Invinsiblewallbefor;
@@ -41,14 +41,13 @@ public class KnockAndDialogController : MonoBehaviour
     public GameObject hotbarUI;
 
     [Header("Auto-Dialog nach Klopfen")]
-    [Tooltip("Sekunden nach Start des Klopfens, bis automatisch der Auto-Dialog mit diesen Zeilen startet")]
+    [Tooltip("Sekunden nach Start des Klopfens, bis automatisch der Auto-Dialog startet")]
     public float autoDialogDelay = 5f;
-
-    [Tooltip("Dialogzeilen, die nach autoDialogDelay angezeigt werden (z.B. 2 Zeilen)")]
+    [Tooltip("Dialogzeilen, die nach autoDialogDelay automatisch angezeigt werden")]
     public string[] autoDialogLines;
 
     private Coroutine autoDialogCoroutine = null;
-    private bool autoDialogShown = false; // Flag, damit es nur einmal passiert
+    private bool autoDialogShown = false;
 
     private Transform player;
     private bool isKnocking = false;
@@ -57,116 +56,109 @@ public class KnockAndDialogController : MonoBehaviour
     void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player")?.transform;
+        if (player == null)
+            Debug.LogError("[KnockAndDialogController] Player nicht gefunden (Tag 'Player').");
 
-        if (playerMain != null) playerMain.gameObject.SetActive(true);
-
-        if (knockAudio == null) Debug.LogError("knockAudio fehlt!");
-        if (hotbarUI != null) hotbarUI.SetActive(true);
-
+        // Initiale Kamera/Player-Settings
+        if (playerMain != null) playerMain.SetActive(true);
         if (playerCamera != null) playerCamera.gameObject.SetActive(true);
         if (cinematicCamera != null) cinematicCamera.gameObject.SetActive(false);
+        if (hotbarUI != null) hotbarUI.SetActive(true);
 
         // Monster-Tür initial deaktivieren
-        if (monsterDoor != null)
-            monsterDoor.SetActive(false);
-        if (MonsterDoorFrameWithoutcode != null)
-            MonsterDoorFrameWithoutcode.SetActive(true);
-        if (Invinsiblewallmidlele != null)
-            Invinsiblewallmidlele.SetActive(false);
-        if (Invinsiblewallafter != null)
-            Invinsiblewallafter.SetActive(false);
-        if (Invinsiblewallmidlele2 != null)
-            Invinsiblewallmidlele2.SetActive(false);
-        if (Invinsiblewallafter2 != null)
-            Invinsiblewallafter2.SetActive(false);
+        if (monsterDoor != null) monsterDoor.SetActive(false);
+        if (MonsterDoorFrameWithoutcode != null) MonsterDoorFrameWithoutcode.SetActive(true);
+        if (Invinsiblewallmidlele != null) Invinsiblewallmidlele.SetActive(false);
+        if (Invinsiblewallafter != null) Invinsiblewallafter.SetActive(false);
+        if (Invinsiblewallmidlele2 != null) Invinsiblewallmidlele2.SetActive(false);
+        if (Invinsiblewallafter2 != null) Invinsiblewallafter2.SetActive(false);
 
         // AudioSource konfigurieren
-        knockAudio.spatialBlend = 1f;
-        knockAudio.loop = true;
-        knockAudio.playOnAwake = false;
-        knockAudio.minDistance = knockMinDistance;
-        knockAudio.maxDistance = knockMaxDistance;
+        if (knockAudio != null)
+        {
+            knockAudio.spatialBlend = 1f;
+            knockAudio.loop = true;
+            knockAudio.playOnAwake = false;
+            knockAudio.minDistance = knockMinDistance;
+            knockAudio.maxDistance = knockMaxDistance;
+        }
+        else
+        {
+            Debug.LogError("[KnockAndDialogController] knockAudio nicht gesetzt!");
+        }
     }
 
     void Update()
     {
         if (player == null) return;
 
-        // 1) Starte Klopfen, sobald alle Aufgaben erledigt sind
-        if (!isKnocking && GameManagerIntro.Instance.allTasksDone)
+        // 1) Starte Klopfen, sobald Task "InvestigateNoise" aktiv ist
+        if (!isKnocking)
         {
-            if (backgroundMusic != null && backgroundMusic.isPlaying)
-                backgroundMusic.Stop();
-
-            knockAudio.Play();
-            isKnocking = true;
-            cutsceneStarted = false;
-            autoDialogShown = false;
-            if (autoDialogCoroutine != null)
+            if (TaskManager.Instance == null)
             {
-                StopCoroutine(autoDialogCoroutine);
-                autoDialogCoroutine = null;
+                Debug.LogWarning("[KnockAndDialogController] TaskManager.Instance ist null; Klopfen nicht gestartet.");
             }
-            autoDialogCoroutine = StartCoroutine(AutoTriggerDialogAfterDelay());
+            else if (TaskManager.Instance.HasTask("InvestigateNoise"))
+            {
+                // Klopfen beginnen
+                if (backgroundMusic != null && backgroundMusic.isPlaying)
+                    backgroundMusic.Stop();
+                if (knockAudio != null)
+                    knockAudio.Play();
+                isKnocking = true;
+                cutsceneStarted = false;
+                autoDialogShown = false;
+                if (autoDialogCoroutine != null)
+                {
+                    StopCoroutine(autoDialogCoroutine);
+                    autoDialogCoroutine = null;
+                }
+                autoDialogCoroutine = StartCoroutine(AutoTriggerDialogAfterDelay());
 
-            // Wände umschalten wie bisher
-            if (Invinsiblewallbefor != null)
-                Invinsiblewallbefor.SetActive(false);
-            if (Invinsiblewallmidlele != null)
-                Invinsiblewallmidlele.SetActive(true);
-            if (Invinsiblewallbefor2 != null)
-                Invinsiblewallbefor2.SetActive(false);
-            if (Invinsiblewallmidlele2 != null)
-                Invinsiblewallmidlele2.SetActive(true);
+                // Wände umschalten
+                if (Invinsiblewallbefor != null) Invinsiblewallbefor.SetActive(false);
+                if (Invinsiblewallmidlele != null) Invinsiblewallmidlele.SetActive(true);
+                if (Invinsiblewallbefor2 != null) Invinsiblewallbefor2.SetActive(false);
+                if (Invinsiblewallmidlele2 != null) Invinsiblewallmidlele2.SetActive(true);
+            }
         }
 
         if (isKnocking)
         {
             // 2) Pause/UnPause basierend auf Spieler-Abstand
+            if (knockAudio == null) return;
             float dist = Vector3.Distance(player.position, knockAudio.transform.position);
             if (dist <= knockMinDistance && knockAudio.isPlaying)
                 knockAudio.Pause();
             else if (dist > knockMinDistance && !knockAudio.isPlaying)
                 knockAudio.UnPause();
 
-            // 3) E-Interaktion, wenn nah genug
+            // 3) E-Interaktion, wenn nah genug und Cutscene noch nicht gestartet
             if (dist <= interactDistance && !cutsceneStarted && Input.GetKeyDown(KeyCode.E))
             {
                 cutsceneStarted = true;
-
-                // Stoppe automatischen Dialog, falls noch aktiv
                 if (autoDialogCoroutine != null)
                 {
                     StopCoroutine(autoDialogCoroutine);
                     autoDialogCoroutine = null;
                 }
+                if (knockAudio != null) knockAudio.Stop();
 
-                knockAudio.Stop();
-
-                // 1) Collider ausschalten
+                // Collider/Interactable ausschalten
                 var col = GetComponent<Collider>();
-                if (col != null)
-                    col.enabled = false;
-
-                // 2) Interactable-Script ausschalten (nur zur Sicherheit)
+                if (col != null) col.enabled = false;
                 var interactable = GetComponent<Interactable>();
-                if (interactable != null)
-                    interactable.enabled = false;
+                if (interactable != null) interactable.enabled = false;
 
-                if (GameManagerIntro.Instance.spotsText != null)
-                    GameManagerIntro.Instance.spotsText.gameObject.SetActive(false);
-                if (GameManagerIntro.Instance.chairsText != null)
-                    GameManagerIntro.Instance.chairsText.gameObject.SetActive(false);
-
-                if (hotbarUI != null)
-                    hotbarUI.SetActive(false);
+                // Hotbar ausblenden
+                if (hotbarUI != null) hotbarUI.SetActive(false);
 
                 StartCoroutine(DialogSequence());
             }
         }
     }
 
-    // === NEU: Coroutine für automatischen Trigger des Dialogs nach Delay ===
     private IEnumerator AutoTriggerDialogAfterDelay()
     {
         yield return new WaitForSecondsRealtime(autoDialogDelay);
@@ -175,8 +167,7 @@ public class KnockAndDialogController : MonoBehaviour
         if (isKnocking && !cutsceneStarted && !autoDialogShown)
         {
             autoDialogShown = true;
-            // Pausiere Klopf-Audio während Auto-Dialog
-            knockAudio.Pause();
+            if (knockAudio != null) knockAudio.Pause();
 
             // Freeze Game und Cursor freigeben
             Time.timeScale = 0f;
@@ -186,8 +177,7 @@ public class KnockAndDialogController : MonoBehaviour
             // Starte Auto-Dialog
             if (autoDialogLines != null && autoDialogLines.Length > 0)
             {
-                if (hotbarUI != null)
-                    hotbarUI.SetActive(false);
+                if (hotbarUI != null) hotbarUI.SetActive(false);
                 DialogueManager.Instance.exitButton.gameObject.SetActive(false);
                 DialogueManager.Instance.StartDialogue(autoDialogLines);
                 yield return new WaitUntil(() => !DialogueManager.Instance.IsInDialogue);
@@ -201,10 +191,8 @@ public class KnockAndDialogController : MonoBehaviour
             Time.timeScale = 1f;
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
-            if (knockAudio != null)
-                knockAudio.UnPause();
-            if (hotbarUI != null)
-                hotbarUI.SetActive(true);
+            if (knockAudio != null) knockAudio.UnPause();
+            if (hotbarUI != null) hotbarUI.SetActive(true);
         }
     }
 
@@ -220,12 +208,14 @@ public class KnockAndDialogController : MonoBehaviour
 
         // c) NPC-Dialog
         DialogueManager.Instance.exitButton.gameObject.SetActive(false);
-        GameObject npc = Instantiate(npcPrefab, npcSpawnPoint.position, npcSpawnPoint.rotation);
+        GameObject npc = null;
+        if (npcPrefab != null && npcSpawnPoint != null)
+            npc = Instantiate(npcPrefab, npcSpawnPoint.position, npcSpawnPoint.rotation);
 
         // Kamera umschalten
         if (playerCamera != null) playerCamera.gameObject.SetActive(false);
         if (cinematicCamera != null) cinematicCamera.gameObject.SetActive(true);
-        if (playerMain != null) playerMain.gameObject.SetActive(false);
+        if (playerMain != null) playerMain.SetActive(false);
 
         DialogueManager.Instance.StartDialogue(dialogNPC);
         yield return new WaitUntil(() => !DialogueManager.Instance.IsInDialogue);
@@ -233,38 +223,27 @@ public class KnockAndDialogController : MonoBehaviour
         // d) Aufräumen und zurückschalten
         if (cinematicCamera != null) cinematicCamera.gameObject.SetActive(false);
         if (playerCamera != null) playerCamera.gameObject.SetActive(true);
-        if (playerMain != null) playerMain.gameObject.SetActive(true);
+        if (playerMain != null) playerMain.SetActive(true);
         if (hotbarUI != null) hotbarUI.SetActive(true);
 
-        Destroy(npc);
+        if (npc != null) Destroy(npc);
 
-        // e) Monster-Tür aktivieren / Wände umschalten wie bisher
-        if (monsterDoor != null)
-            monsterDoor.SetActive(true);
-        if (MonsterDoorFrameWithoutcode != null)
-            MonsterDoorFrameWithoutcode.SetActive(false);
-        if (Invinsiblewallmidlele != null)
-            Invinsiblewallmidlele.SetActive(false);
-        if (Invinsiblewallafter != null)
-            Invinsiblewallafter.SetActive(true);
-        if (Invinsiblewallmidlele2 != null)
-            Invinsiblewallmidlele2.SetActive(false);
-        if (Invinsiblewallafter2 != null)
-            Invinsiblewallafter2.SetActive(true);
-
-        // f) Diese Szene nicht länger als Interactable behalten
-        gameObject.layer = LayerMask.NameToLayer("Default");
-    }
-
-    private IEnumerator RotateLocal(Transform t, Quaternion from, Quaternion to, float duration)
-    {
-        float elapsed = 0f;
-        while (elapsed < duration)
+        // Task wechseln: InvestigateNoise entfernen, EscapeExit hinzufügen
+        if (TaskManager.Instance != null)
         {
-            elapsed += Time.unscaledDeltaTime;
-            t.localRotation = Quaternion.Slerp(from, to, elapsed / duration);
-            yield return null;
+            TaskManager.Instance.RemoveTask("InvestigateNoise");
+            TaskManager.Instance.AddTask("EscapeExit", "Task: Escape through the emergency exit", "");
         }
-        t.localRotation = to;
+
+        // e) Monster-Tür aktivieren / Wände umschalten
+        if (monsterDoor != null) monsterDoor.SetActive(true);
+        if (MonsterDoorFrameWithoutcode != null) MonsterDoorFrameWithoutcode.SetActive(false);
+        if (Invinsiblewallmidlele != null) Invinsiblewallmidlele.SetActive(false);
+        if (Invinsiblewallafter != null) Invinsiblewallafter.SetActive(true);
+        if (Invinsiblewallmidlele2 != null) Invinsiblewallmidlele2.SetActive(false);
+        if (Invinsiblewallafter2 != null) Invinsiblewallafter2.SetActive(true);
+
+        // f) Interactable deaktivieren
+        gameObject.layer = LayerMask.NameToLayer("Default");
     }
 }

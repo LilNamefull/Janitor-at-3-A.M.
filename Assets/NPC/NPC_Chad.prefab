@@ -234,12 +234,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueLines:
-  - 'Chad: How the hell did you find me?!
+  - 'Chad.: How the hell did you find me?!
 
 '
   - "Janitor.: Well you're not exactly hiding well. Also, hate to break it to you,
     but you\u2019re already dead.\n"
-  - "Chad: Yeah, no shit! Doesn\u2019t change the fact that I can\u2019t leave this
+  - "Chad.: Yeah, no shit! Doesn\u2019t change the fact that I can\u2019t leave this
     damn building. And that bastard of a principal is still hunting me down\u2014even
     though I\u2019m dead!\n"
   - 'Janitor.: Look, we need to get to the point, I talked to Billy. He said you
@@ -247,26 +247,26 @@ MonoBehaviour:
     any chance of getting out of here.
 
 '
-  - "Chad.: Oh, you need it? Cool. Just one problem dipshit, I don\u2019t have it.
+  - "Chad..: Oh, you need it? Cool. Just one problem dipshit, I don\u2019t have it.
     Tried grabbing it from my own corpse, and guess what? Burned the hell outta my
     hand. That shit isn't exactly ghost friendly.\n"
   - 'Janitor.: Fine, then where''s your body?
 
 '
-  - 'Chad.: And what do I get from telling you that?
+  - 'Chad..: And what do I get from telling you that?
 
 '
   - 'Janitor.: I could try to free your spirit from this school.
 
 '
-  - 'Chad: You better keep your word, janitor, or else... *expands through the locker
-    walls*
+  - 'Chad...: You better keep your word, janitor, or else... *expands through the
+    locker walls*
 
 '
-  - 'Janitor: I will...I will... calm down.
+  - 'Janitor.: I will...I will... calm down.
 
 '
-  - 'Chad: Aight, big boy. The last thing I remember is sprinting to the main exit
+  - 'Chad..: Aight, big boy. The last thing I remember is sprinting to the main exit
     but the damn door was locked. So I headed back into room Algebra 2 to hide out
     in. After that... I dunno - I think that was it, I guess.'
   spawnPrefab1: {fileID: 8064226487575135456, guid: 3f29889a2237d0a44a5e6e10a309f784, type: 3}

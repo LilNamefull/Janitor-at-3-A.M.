@@ -19,8 +19,8 @@ public class MapController : MonoBehaviour
         if (mapPanel == null)
             return;
 
-        // Wenn die Taste T gehalten wird, Karte anzeigen; sonst verstecken
-        if (Input.GetKey(KeyCode.T))
+        // Wenn die Taste M gehalten wird, Karte anzeigen; sonst verstecken
+        if (Input.GetKey(KeyCode.M))
         {
             if (hotbarUI != null)
                 hotbarUI.SetActive(false);
